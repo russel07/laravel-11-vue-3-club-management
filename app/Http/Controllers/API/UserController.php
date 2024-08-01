@@ -9,26 +9,35 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Http\JsonResponse;
      
-class RegisterController extends BaseController
+class UserController extends BaseController
 {
     /**
-     * Register api
+     * Create User api
      *
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $input = $request->all();
+
+        $fields = [
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
-        ]);
+        ];
+
+        if ( isset($input['user_type']) && 'Athlete' === $input['user_type']) {
+            $fields['team_id'] = 'required';
+            $fields['gender'] = 'required';
+            $fields['birth_year'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $fields);
      
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
-     
-        $input = $request->all();
+
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $success['token'] =  $user->createToken('MyApp')->accessToken;
