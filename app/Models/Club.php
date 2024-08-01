@@ -10,6 +10,19 @@ class Club extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'location',
+        'manager_name',
+        'manager_email',
+    ];
+
+
+    /**
      * The sports that belong to the club.
      */
     public function sports()

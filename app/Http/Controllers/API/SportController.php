@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Validator;
-use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Sport;
 
 class SportController extends BaseController 
@@ -55,6 +54,10 @@ class SportController extends BaseController
     public function show($id)
     {
         $sport = Sport::findOrFail($id);
+
+        if(!$sport) {
+            return $this->sendError('Invalid Request.', ['No sports found']);   
+        }
 
         return $this->sendResponse($sport, '');
     }
