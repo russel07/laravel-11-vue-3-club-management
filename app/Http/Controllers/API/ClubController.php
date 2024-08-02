@@ -76,7 +76,7 @@ class ClubController extends BaseController
      * Update the specified club in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Club  $club
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
@@ -116,7 +116,7 @@ class ClubController extends BaseController
     /**
      * Remove the specified club from storage.
      *
-     * @param  \App\Models\Club  $club
+     * @param   int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy( $id )

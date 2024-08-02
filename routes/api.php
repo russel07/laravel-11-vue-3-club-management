@@ -7,6 +7,7 @@ use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SportController;
 use App\Http\Controllers\API\ClubController;
+use App\Http\Controllers\API\TeamController;
  
   
 Route::post('register', [UserController::class, 'create']);
@@ -30,3 +31,10 @@ Route::post('/clubs', [ClubController::class, 'store'])->name('store-clubs');
 Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('get-club');
 Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('edit-club');
 Route::delete('/clubs/{id}', [ClubController::class, 'destroy'])->name('delete-club');
+
+//Team EndPoints
+Route::get('/teams', [TeamController::class, 'index'])->name('teams');
+Route::post('/teams', [TeamController::class, 'store'])->name('store-teams');
+Route::get('/teams/{id}', [TeamController::class, 'show'])->name('get-team');
+Route::put('/teams/{id}', [TeamController::class, 'update'])->name('edit-team');
+Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('delete-team');

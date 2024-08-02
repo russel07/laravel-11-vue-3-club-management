@@ -66,7 +66,7 @@ class SportController extends BaseController
      * Update the specified sport in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Sport  $sport
+     * @param   int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
@@ -89,7 +89,7 @@ class SportController extends BaseController
     /**
      * Remove the specified sport from storage.
      *
-     * @param  \App\Models\Sport  $sport
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy( $id )
