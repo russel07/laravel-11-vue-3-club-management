@@ -10,17 +10,18 @@
     "author": "Md. Russel Hussain",
     "license": "ISC",
     "devDependencies": {
-      "@vue/compiler-sfc": "^3.4.35",
-      "cross-env": "^7.0.3",
-      "laravel-mix": "^6.0.49",
-      "vue-loader": "^17.4.2"
+        "@vue/compiler-sfc": "^3.4.35",
+        "cross-env": "^7.0.3",
+        "laravel-mix": "^6.0.49",
+        "vue-loader": "^17.4.2"
     },
     "dependencies": {
-      "browser-sync": "^3.0.2",
-      "element-plus": "^2.7.8",
-      "jquery": "^3.7.1",
-      "lodash": "^4.17.21",
-      "vue": "^3.4.35",
-      "vue-router": "^4.4.0"
+        "axios": "^1.7.3",
+        "browser-sync": "^3.0.2",
+        "element-plus": "^2.7.8",
+        "jquery": "^3.7.1",
+        "lodash": "^4.17.21",
+        "vue": "^3.4.35",
+        "vue-router": "^4.4.0"
     }
 }

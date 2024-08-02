@@ -23,5 +23,7 @@ mix.js('resources/js/main.js', 'public/js/app.js').vue({ version: 3 });
 // Compile plain CSS
 mix.css('resources/css/app.css', 'public/css/app.css');
 
-// OR Compile Sass to CSS
-//mix.sass('resources/sass/app.scss', 'public/css/app.css');
+mix.copy('resources/images', 'public/images')
+
+//Compile Sass to CSS
+mix.sass('resources/sass/app.scss', 'public/css/app.css');
