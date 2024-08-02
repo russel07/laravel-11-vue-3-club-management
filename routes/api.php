@@ -17,7 +17,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
-Route::middleware('auth:api')->group(function () {
+//Route::middleware('auth:api')->group(function () {
     //Sports EndPoints
     Route::get('/sports', [SportController::class, 'index'])->name('sports');
     Route::post('/sports', [SportController::class, 'create'])->name('store-sports');
@@ -38,4 +38,4 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/teams/{id}', [TeamController::class, 'show'])->name('get-team');
     Route::put('/teams/{id}', [TeamController::class, 'update'])->name('edit-team');
     Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('delete-team');
-});
+//});

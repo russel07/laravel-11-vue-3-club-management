@@ -18,6 +18,13 @@
               <el-button type="primary" @click="onSubmit">Login</el-button>
             </el-form-item>
           </el-form>
+
+          <div class="form-links">
+            <a href="#/forgot-password" class="link">Forgot Password?</a>
+            <a href="#/register" class="link">Join to the Team?</a>
+          </div>
+
+          
         </el-card>
         
       </el-main>
@@ -106,5 +113,20 @@
 
 .el-card {
   width: 100%;
+}
+
+.form-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.link {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 </style>
