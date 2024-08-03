@@ -2,6 +2,7 @@ import { createWebHashHistory, createRouter } from "vue-router";
 import Dashboard from "../components/Dashboard";
 import Sports from "../components/Sports";
 import Clubs from "../components/Clubs";
+import Teams from "../components/Teams";
 import Login from "../components/Login";
 import Register from "../components/Register";
 
@@ -20,6 +21,11 @@ const routes = [
 		path: '/clubs',
 		name:'Clubs',
 		component: Clubs
+	},
+	{
+		path: '/teams',
+		name:'Teams',
+		component: Teams
 	},
     {
 		path: '/login2',

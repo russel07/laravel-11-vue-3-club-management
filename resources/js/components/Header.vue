@@ -7,15 +7,15 @@
         @select="handleSelect"
         :router="true"
     >
-      <el-menu-item index="0">
+      <el-menu-item index="/">
         <img style="width: 60px" src="../../images/logo.png" alt="App logo" />
       </el-menu-item>
 
       <el-sub-menu index="1">
         <template #title>Manage</template>
         <el-menu-item index="sports">Sports</el-menu-item>
-        <el-menu-item index="clubs">Club</el-menu-item>
-        <el-menu-item index="teams">Team</el-menu-item>
+        <el-menu-item index="clubs">Clubs</el-menu-item>
+        <el-menu-item index="teams">Teams</el-menu-item>
       </el-sub-menu>
 
       <el-sub-menu index="2">

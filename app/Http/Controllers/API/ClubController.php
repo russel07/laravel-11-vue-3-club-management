@@ -72,6 +72,19 @@ class ClubController extends BaseController
         return $this->sendResponse($club, '');
     }
 
+    public function bySports ($sport_id) 
+    {
+        $clubs = Club::whereHas('sports', function ($query) use ($sport_id) {
+            $query->where('sport_id', $sport_id);
+        })->with('sports')->get();
+
+        if ($clubs->isEmpty()) {
+            return $this->sendError('No clubs found for this sport.');
+        }
+
+        return $this->sendResponse($clubs, 'Clubs retrieved successfully.');
+    }
+
     /**
      * Update the specified club in storage.
      *

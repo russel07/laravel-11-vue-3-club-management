@@ -29,6 +29,7 @@ Route::get('/user', function (Request $request) {
     Route::get('/clubs', [ClubController::class, 'index'])->name('clubs');
     Route::post('/clubs', [ClubController::class, 'store'])->name('store-clubs');
     Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('get-club');
+    Route::get('/clubs-by-sports/{id}', [ClubController::class, 'bySports'])->name('get-club');
     Route::put('/clubs/{id}', [ClubController::class, 'update'])->name('edit-club');
     Route::delete('/clubs/{id}', [ClubController::class, 'destroy'])->name('delete-club');
 
