@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('clubs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('Location');
+            $table->string('location');
             $table->string('manager_name');
             $table->string('manager_email');
             $table->timestamps();
