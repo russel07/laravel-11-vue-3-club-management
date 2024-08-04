@@ -160,8 +160,9 @@ export default {
       form.name = team.name;
       form.coach_name = team.coach_name;
       form.coach_email = team.coach_email;
-      form.club_id = team.club_id;
       form.sport_id = team.sport_id;
+      filterClubs();
+      form.club_id = team.club_id;
       isEditing.value = true;
     };
 

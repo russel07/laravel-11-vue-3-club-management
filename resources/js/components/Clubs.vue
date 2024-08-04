@@ -19,7 +19,10 @@
         </el-form-item>
         <el-form-item label="Sport" prop="sports">
           <el-select v-model="form.sports" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" placeholder="Select Sport">
-            <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
+            <el-option v-for="sport in sports" 
+            :key="sport.id" 
+            :label="sport.name" 
+            :value="sport.id" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -70,7 +73,7 @@ setup() {
     location: '',
     manager_name: '',
     manager_email: '',
-    sports: '',
+    sports: [],
   });
 
   const clubs = ref([]);
@@ -192,37 +195,37 @@ setup() {
 
 <style scoped>
 .clubs-container {
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-align-items: flex-start;
-gap: 2%;
-margin: 0 4%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2%;
+  margin: 0 4%;
 }
 
 .form-wrapper{
-width: 100%;
-flex: 1;
+  width: 100%;
+  flex: 1;
 }
 
 .clubs-wrapper{
-flex: 2;
-text-align: center;
+  flex: 2;
+  text-align: center;
 }
 
 .list-card {
-display: flex;
-gap: 2%; 
-flex-wrap: wrap;
-justify-content: flex-start; 
+  display: flex;
+  gap: 2%; 
+  flex-wrap: wrap;
+  justify-content: flex-start; 
 }
 
 .club-item {
-width: 31%;
-text-align: left;
+  width: 31%;
+  text-align: left;
 }
 
 .el-tag{
-margin: 0 5px;
+  margin: 0 5px;
 }
 </style>

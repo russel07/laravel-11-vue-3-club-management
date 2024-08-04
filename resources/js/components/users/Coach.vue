@@ -1,17 +1,14 @@
 <template>
-  <Header />
   <div class="wrapper">
-    <h1>Register</h1>
+    <h1>Coach</h1>
   </div>
 </template>
 
 <script>
   import { ref } from 'vue';
-  import Header from "./Header";
   export default {
-    name: 'Register',
+    name: 'Coach',
     components: {
-      Header,
     },
 
     setup(){

@@ -2,26 +2,22 @@
   <div class="common-layout">
     <el-container class="full-height">
       <el-main class="main-center">
-        <img class="logo" src="../../images/logo.png"/>
+        <img class="logo" src="../../../images/logo.png"/>
 
         <el-card style="max-width: 480px; margin-top: 20px;">
           <el-form :model="form" :rules="rules" ref="loginForm" label-width="auto" label-position="top" style="max-width: 600px">
             <el-form-item label="Email" prop="email">
               <el-input v-model="form.email" />
             </el-form-item>
-
-            <el-form-item label="Password" prop="password">
-              <el-input v-model="form.password" type="password" />
-            </el-form-item>
             
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">Login</el-button>
+              <el-button type="primary" @click="onSubmit">Submit</el-button>
             </el-form-item>
           </el-form>
 
           <div class="form-links">
-            <a href="#/forgot-password" class="link">Forgot Password?</a>
-            <a href="#/register" class="link">Join to the Team?</a>
+            <p>Already have account?<a href="#/login" class="link">Login here</a></p>
+            <a href="#/register/athlete" class="link">Join to the Team?</a>
           </div>
 
           
@@ -39,20 +35,16 @@
   import axios from 'axios';
 
   export default {
-    name: 'Login',
+    name: 'ForgotPassword',
     setup() {
       const form = reactive({
-        email: '',
-        password: '',
+        email: ''
       });
 
       const rules = reactive({
         email: [
           { required: true, message: 'Please input email', trigger: 'blur' },
           { type: 'email', message: 'Please input valid email', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: 'Please input password', trigger: 'blur' }
         ]
       });
 
@@ -90,11 +82,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-}
-
-.full-height {
-  height: 100%;
 }
 
 .main-center {
