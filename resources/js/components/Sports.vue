@@ -1,39 +1,33 @@
 <template>
-  <Header />
+  <Header :pageTitle="'Sports List'" @add-new="onAddNew" @search="onSearch" />
   <div class="sports-container">
-    <div class="form-wrapper">
-      <h1>{{ isEditing ? 'Update' : 'Add' }} Sport</h1>
-      <el-card class="form-card" style="max-width: 500px;">
-        <el-form :model="form" :rules="rules" ref="sportForm" label-width="auto" label-position="top">
-          <el-form-item label="Sport Name" prop="name">
-            <el-input v-model="form.name" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-            <el-button @click="resetForm">Cancel</el-button>
-          </el-form-item>
-        </el-form>
+    <div class="list-card">
+      <el-card class="sports-item" v-for="sport in filteredSports" :key="sport.id">
+        {{ sport.name }}
+        <template #footer>
+          <el-button size="small" @click="handleEdit(sport)">Edit</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(sport.id)">Delete</el-button>
+        </template>
       </el-card>
     </div>
-
-    <div class="sports-wrapper">
-      <h1>Sports List</h1>
-      <div class="h-6" />
-      <div class="list-card">
-        <el-card class="sports-item" v-for="sport in sports" :key="sport.id">
-          {{ sport.name }}
-          <template #footer>
-            <el-button size="small" @click="handleEdit(sport)">Edit</el-button>
-                <el-button size="small" type="danger" @click="handleDelete(sport.id)">Delete</el-button>
-          </template>
-        </el-card>
-      </div>
-    </div>
   </div>
+  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+    <el-form :model="form" :rules="rules" ref="sportForm" label-width="auto" label-position="top">
+      <el-form-item label="Sport Name" prop="name">
+        <el-input v-model="form.name" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+            <el-button @click="resetForm">Cancel</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
 import axios from 'axios';
 
@@ -49,8 +43,12 @@ export default {
     });
 
     const sports = ref([]);
+    const filteredSports = ref([]);
+    const queryArg = ref(null);
     const isEditing = ref(false);
     const sportForm = ref(null);
+    const dialogFormVisible = ref(false);
+    const dialogTitle = ref('');
 
     const rules = reactive({
       name: [
@@ -62,10 +60,26 @@ export default {
       try {
         const response = await axios.get('http://lara-rest.test/api/sports');
         sports.value = response.data.data;
+        filteredSports.value = response.data.data;
       } catch (error) {
         console.error('Failed to fetch sports:', error.response.data);
       }
     };
+
+    const onAddNew = () => {
+      dialogFormVisible.value = true;
+    }
+
+    const filterSports = () => {
+      filteredSports.value = sports.value.filter(sport =>
+        !queryArg.value || sport.name.toLowerCase().includes(queryArg.value.toLowerCase())
+      );
+    };
+
+    const onSearch = (q) => {
+      queryArg.value = q;
+      filterSports();
+    }
 
     const onSubmit = () => {
       sportForm.value.validate(async (valid) => {
@@ -93,12 +107,14 @@ export default {
       form.name = '';
       isEditing.value = false;
       sportForm.value.resetFields();
+      dialogFormVisible.value = false;
     };
 
     const handleEdit = (sport) => {
       form.id = sport.id;
       form.name = sport.name;
       isEditing.value = true;
+      dialogFormVisible.value = true;
     };
 
     const handleDelete = async (id) => {
@@ -110,7 +126,15 @@ export default {
       }
     };
 
-    fetchSports();
+    onMounted(() => {
+      fetchSports();
+      getTitle();
+    });
+
+    const getTitle = () => {
+      dialogTitle.value = isEditing.value ? 'Update ' : 'Add ';
+      dialogTitle.value += ' Sport';
+    }
 
     return {
       form,
@@ -121,7 +145,13 @@ export default {
       onSubmit,
       resetForm,
       handleEdit,
-      handleDelete
+      handleDelete,
+      getTitle,
+      filteredSports,
+      onAddNew,
+      onSearch,
+      dialogFormVisible,
+      dialogTitle
     };
   }
 };
@@ -129,22 +159,7 @@ export default {
 
 <style scoped>
 .sports-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2%;
-  margin: 0 4%;
-}
-
-.form-wrapper{
-  width: 100%;
-  flex: 1;
-}
-
-.sports-wrapper{
-  flex: 2;
-  text-align: center;
+  margin: 2% 4%;
 }
 
 .list-card{
@@ -154,11 +169,7 @@ export default {
   justify-content: flex-start; 
 }
 .sports-item{
-  width: 30%;
+  width: 250px;
   margin-top: 3%;
-}
-
-.el-table th, .el-table td {
-  text-align: center;
 }
 </style>

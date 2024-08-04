@@ -1,43 +1,8 @@
 <template>
-  <Header />
-<div class="clubs-container">
-  <div class="form-wrapper">
-    <h1>{{ isEditing ? 'Update' : 'Add' }} Club</h1>
-    <el-card class="form-card" style="max-width: 500px;">
-      <el-form :model="form" :rules="rules" ref="clubForm" label-width="auto" label-position="top">
-        <el-form-item label="Club Name" prop="name">
-          <el-input v-model="form.name" />
-        </el-form-item>
-        <el-form-item label="Location" prop="location">
-          <el-input v-model="form.location" />
-        </el-form-item>
-        <el-form-item label="Manager Name" prop="manager_name">
-          <el-input v-model="form.manager_name" />
-        </el-form-item>
-        <el-form-item label="Manager Email" prop="manager_email">
-          <el-input v-model="form.manager_email" />
-        </el-form-item>
-        <el-form-item label="Sport" prop="sports">
-          <el-select v-model="form.sports" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" placeholder="Select Sport">
-            <el-option v-for="sport in sports" 
-            :key="sport.id" 
-            :label="sport.name" 
-            :value="sport.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-          <el-button @click="resetForm">Cancel</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-  </div>
-
-  <div class="clubs-wrapper">
-    <h1>Club List</h1>
-    <div class="h-6" />
+  <Header :pageTitle="'Club List'" @add-new="onAddNew" @search="onSearch" />
+  <div class="clubs-container">
     <div class="list-card">
-      <el-card class="club-item" v-for="club in clubs" :key="club.id">
+      <el-card class="club-item" v-for="club in filteredClubs" :key="club.id">
         <template #header>{{ club.name }}</template>
         <p><strong>Location:</strong> {{ club.location }}</p>
         <p><strong>Manager:</strong> {{ club.manager_name }} </p>
@@ -52,8 +17,38 @@
         </template>
       </el-card>
     </div>
-  </div>
 </div>
+
+  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+    <el-form :model="form" :rules="rules" ref="clubForm" label-width="auto" label-position="top">
+      <el-form-item label="Club Name" prop="name">
+        <el-input v-model="form.name" />
+      </el-form-item>
+      <el-form-item label="Location" prop="location">
+        <el-input v-model="form.location" />
+      </el-form-item>
+      <el-form-item label="Manager Name" prop="manager_name">
+        <el-input v-model="form.manager_name" />
+      </el-form-item>
+      <el-form-item label="Manager Email" prop="manager_email">
+        <el-input v-model="form.manager_email" />
+      </el-form-item>
+      <el-form-item label="Sport" prop="sports">
+        <el-select v-model="form.sports" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" placeholder="Select Sport">
+          <el-option v-for="sport in sports" 
+          :key="sport.id" 
+          :label="sport.name" 
+          :value="sport.id" />
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+            <el-button @click="resetForm">Cancel</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
@@ -64,7 +59,7 @@ import axios from 'axios';
 export default {
 name: 'Clubs',
 components: {
-    Header,
+  Header,
 },
 setup() {
   const form = reactive({
@@ -77,9 +72,13 @@ setup() {
   });
 
   const clubs = ref([]);
+  const filteredClubs = ref([]);
+  const queryArg = ref(null);
   const sports = ref([]);
   const isEditing = ref(false);
   const clubForm = ref(null);
+  const dialogFormVisible = ref(false);
+  const dialogTitle = ref('');
 
   const rules = reactive({
     name: [
@@ -104,6 +103,7 @@ setup() {
     try {
       const response = await axios.get('http://lara-rest.test/api/clubs');
       clubs.value = response.data.data;
+      filteredClubs.value = response.data.data;
     } catch (error) {
       console.error('Failed to fetch clubs:', error.response.data);
     }
@@ -113,10 +113,26 @@ setup() {
     try {
       const response = await axios.get('http://lara-rest.test/api/sports');
       sports.value = response.data.data;
+    
     } catch (error) {
       console.error('Failed to fetch sports:', error.response.data);
     }
   };
+
+  const onAddNew = () => {
+    dialogFormVisible.value = true;
+  }
+
+  const filterClubs = () => {
+    filteredClubs.value = clubs.value.filter(club =>
+      !queryArg.value || club.name.toLowerCase().includes(queryArg.value.toLowerCase())
+    );
+  };
+
+  const onSearch = (q) => {
+    queryArg.value = q;
+    filterClubs();
+  }
 
   const onSubmit = () => {
     clubForm.value.validate(async (valid) => {
@@ -148,6 +164,7 @@ setup() {
     form.sports = [];
     isEditing.value = false;
     clubForm.value.resetFields();
+    dialogFormVisible.value = false;
   };
 
   const editClub = (club) => {
@@ -161,6 +178,7 @@ setup() {
       form.sports.push(element.id);
     });
     isEditing.value = true;
+    dialogFormVisible.value = true;
   };
 
   const deleteClub = async (id) => {
@@ -172,14 +190,20 @@ setup() {
     }
   };
 
+  const getTitle = () => {
+    dialogTitle.value = isEditing.value ? 'Update ' : 'Add ';
+    dialogTitle.value += ' Club';
+  }
+
   onMounted(() => {
     fetchClubs();
     fetchSports();
+    getTitle();
   });
 
   return {
     form,
-    clubs,
+    filteredClubs,
     sports,
     rules,
     clubForm,
@@ -187,7 +211,11 @@ setup() {
     onSubmit,
     resetForm,
     editClub,
-    deleteClub
+    deleteClub,
+    onAddNew,
+    onSearch,
+    dialogFormVisible,
+    dialogTitle
   };
 }
 };
@@ -195,22 +223,7 @@ setup() {
 
 <style scoped>
 .clubs-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2%;
-  margin: 0 4%;
-}
-
-.form-wrapper{
-  width: 100%;
-  flex: 1;
-}
-
-.clubs-wrapper{
-  flex: 2;
-  text-align: center;
+  margin: 2% 4%;
 }
 
 .list-card {
@@ -221,8 +234,9 @@ setup() {
 }
 
 .club-item {
-  width: 31%;
+  width: 23%;
   text-align: left;
+  margin-top: 3%;
 }
 
 .el-tag{
