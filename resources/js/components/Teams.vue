@@ -1,54 +1,50 @@
 <template>
-  <Header />
+  <Header :pageTitle="'Team List'" @add-new="onAddNew" @search="onSearch" />
   <div class="teams-container">
-    <div class="form-wrapper">
-      <h1>{{ isEditing ? 'Update' : 'Add' }} Team</h1>
-      <el-card class="form-card" style="max-width: 500px;">
-        <el-form :model="form" :rules="rules" ref="teamForm" label-width="auto" label-position="top">
-          <el-form-item label="Sport" prop="sport_id">
-            <el-select v-model="form.sport_id" placeholder="Select Sport" @change="filterClubs">
-              <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Club" prop="club_id">
-            <el-select v-model="form.club_id" placeholder="Select Club">
-              <el-option v-for="club in clubs" :key="club.id" :label="club.name" :value="club.id" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Team Name" prop="name">
-            <el-input v-model="form.name" />
-          </el-form-item>
-          <el-form-item label="Coach Name" prop="coach_name">
-            <el-input v-model="form.coach_name" />
-          </el-form-item>
-          <el-form-item label="Coach Email" prop="coach_email">
-            <el-input v-model="form.coach_email" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-            <el-button @click="resetForm">Cancel</el-button>
-          </el-form-item>
-        </el-form>
+    <div class="list-card">
+      <el-card class="team-item" v-for="team in filteredTeams" :key="team.id">
+        <template #header>{{ team.name }}</template>
+        <p><strong>Coach:</strong> {{ team.coach_name }}</p>
+        <p><strong>Email:</strong> {{ team.coach_email }}</p>
+        <p><strong>Sports:</strong> {{ team.sport.name }}</p>
+        <p><strong>Club:</strong> {{ team.club.name }}</p>
+        <template #footer>
+          <el-button size="small" @click="editTeam(team)">Edit</el-button>
+          <el-button size="small" type="danger" @click="deleteTeam(team.id)">Delete</el-button>
+        </template>
       </el-card>
     </div>
-
-    <div class="teams-wrapper">
-      <h1>Team List</h1>
-      <div class="list-card">
-        <el-card class="team-item" v-for="team in teams" :key="team.id">
-          <template #header>{{ team.name }}</template>
-          <p><strong>Coach:</strong> {{ team.coach_name }}</p>
-          <p><strong>Email:</strong> {{ team.coach_email }}</p>
-          <p><strong>Sports:</strong> {{ team.sport.name }}</p>
-          <p><strong>Club:</strong> {{ team.club.name }}</p>
-          <template #footer>
-            <el-button size="small" @click="editTeam(team)">Edit</el-button>
-            <el-button size="small" type="danger" @click="deleteTeam(team.id)">Delete</el-button>
-          </template>
-        </el-card>
-      </div>
-    </div>
   </div>
+
+  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+    <el-form :model="form" :rules="rules" ref="teamForm" label-width="auto" label-position="top">
+      <el-form-item label="Sport" prop="sport_id">
+        <el-select v-model="form.sport_id" placeholder="Select Sport" @change="filterClubs">
+          <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Club" prop="club_id">
+        <el-select v-model="form.club_id" placeholder="Select Club">
+          <el-option v-for="club in clubs" :key="club.id" :label="club.name" :value="club.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Team Name" prop="name">
+        <el-input v-model="form.name" />
+      </el-form-item>
+      <el-form-item label="Coach Name" prop="coach_name">
+        <el-input v-model="form.coach_name" />
+      </el-form-item>
+      <el-form-item label="Coach Email" prop="coach_email">
+        <el-input v-model="form.coach_email" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+            <el-button @click="resetForm">Cancel</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
@@ -72,10 +68,14 @@ export default {
     });
 
     const teams = ref([]);
+    const filteredTeams = ref([]);
+    const queryArg = ref(null);
     const sports = ref([]);
     const clubs = ref([]);
     const isEditing = ref(false);
     const teamForm = ref(null);
+    const dialogFormVisible = ref(false);
+    const dialogTitle = ref('');
 
     const rules = reactive({
       name: [
@@ -100,6 +100,7 @@ export default {
       try {
         const response = await axios.get('http://lara-rest.test/api/teams');
         teams.value = response.data.data;
+        filteredTeams.value = response.data.data;
       } catch (error) {
         console.error('Failed to fetch teams:', error.response.data);
       }
@@ -122,6 +123,22 @@ export default {
         console.error('Failed to fetch clubs:', error.response.data);
       }
     };
+
+    const onAddNew = () => {
+      getTitle();
+      dialogFormVisible.value = true;
+    }
+
+    const filterTeams = () => {
+      filteredTeams.value = teams.value.filter(team =>
+        !queryArg.value || team.name.toLowerCase().includes(queryArg.value.toLowerCase())
+      );
+    };
+
+    const onSearch = (q) => {
+      queryArg.value = q;
+      filterTeams();
+    }
 
     const onSubmit = () => {
       teamForm.value.validate(async (valid) => {
@@ -153,6 +170,8 @@ export default {
       form.sport_id = '';
       isEditing.value = false;
       teamForm.value.resetFields();
+      dialogFormVisible.value = false;
+      getTitle();
     };
 
     const editTeam = (team) => {
@@ -164,6 +183,8 @@ export default {
       filterClubs();
       form.club_id = team.club_id;
       isEditing.value = true;
+      dialogFormVisible.value = true;
+      getTitle();
     };
 
     const deleteTeam = async (id) => {
@@ -182,9 +203,15 @@ export default {
       return clubs.value;
     };
 
+    const getTitle = () => {
+      dialogTitle.value = isEditing.value ? 'Update ' : 'Add ';
+      dialogTitle.value += ' Team';
+    }
+
     onMounted(() => {
       fetchTeams();
       fetchSports();
+      getTitle();
     });
 
     return {
@@ -199,7 +226,12 @@ export default {
       resetForm,
       editTeam,
       deleteTeam,
-      filterClubs
+      filterClubs,
+      filteredTeams,
+      onAddNew,
+      onSearch,
+      dialogFormVisible,
+      dialogTitle
     };
   }
 };
@@ -207,22 +239,7 @@ export default {
 
 <style scoped>
 .teams-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2%;
-  margin: 0 4%;
-}
-
-.form-wrapper {
-  width: 100%;
-  flex: 1;
-}
-
-.teams-wrapper {
-  flex: 2;
-  text-align: center;
+  margin: 2% 4%;
 }
 
 .list-card {
@@ -233,7 +250,7 @@ export default {
 }
 
 .team-item {
-  width: 31%;
+  width: 23%;
   text-align: left;
 }
 

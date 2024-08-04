@@ -67,6 +67,7 @@ export default {
     };
 
     const onAddNew = () => {
+      getTitle();
       dialogFormVisible.value = true;
     }
 
@@ -108,12 +109,14 @@ export default {
       isEditing.value = false;
       sportForm.value.resetFields();
       dialogFormVisible.value = false;
+      getTitle();
     };
 
     const handleEdit = (sport) => {
       form.id = sport.id;
       form.name = sport.name;
       isEditing.value = true;
+      getTitle();
       dialogFormVisible.value = true;
     };
 

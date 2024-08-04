@@ -120,6 +120,7 @@ setup() {
   };
 
   const onAddNew = () => {
+    getTitle();
     dialogFormVisible.value = true;
   }
 
@@ -165,6 +166,7 @@ setup() {
     isEditing.value = false;
     clubForm.value.resetFields();
     dialogFormVisible.value = false;
+    getTitle();
   };
 
   const editClub = (club) => {
@@ -178,6 +180,7 @@ setup() {
       form.sports.push(element.id);
     });
     isEditing.value = true;
+    getTitle();
     dialogFormVisible.value = true;
   };
 
