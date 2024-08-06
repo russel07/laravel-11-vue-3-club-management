@@ -12,37 +12,58 @@ const routes = [
     {
 		path: '/',
 		name:'Dashboard',
-		component: Dashboard
+		component: Dashboard,
+        meta: {
+            requiresAuth: true
+        }
 	},
 	{
 		path: '/sports',
 		name:'Sports',
-		component: Sports
+		component: Sports,
+        meta: {
+            requiresAuth: true
+        }
 	},
 	{
 		path: '/clubs',
 		name:'Clubs',
-		component: Clubs
+		component: Clubs,
+        meta: {
+            requiresAuth: true
+        }
 	},
 	{
 		path: '/teams',
 		name:'Teams',
-		component: Teams
+		component: Teams,
+        meta: {
+            requiresAuth: true
+        }
 	},
     {
 		path: '/register/athlete',
 		name:'AthleteRegister',
-		component: AthleteRegister
+		component: AthleteRegister,
+        meta: {
+            guest: true
+        }
 	},
     {
 		path: '/login',
 		name:'Login',
-		component: Login
+		component: Login,
+        meta: {
+            guest: true
+        }
 	},
     {
 		path: '/forgot-password',
 		name:'ForgotPassword',
-		component: ForgotPassword
+		component: ForgotPassword,
+        meta: {
+            guest: true
+        }
 	}
 ];
 

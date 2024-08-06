@@ -15,7 +15,7 @@ class TeamController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         $teams = Team::with(['club', 'sport'])->get();
         return $this->sendResponse($teams, '');
@@ -55,7 +55,7 @@ class TeamController extends BaseController
      * @param  int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $team = Team::findOrFail($id);
 
@@ -112,7 +112,7 @@ class TeamController extends BaseController
      * @param  int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy( $id )
+    public function destroy( Request $request, $id )
     {
         $team = Team::findOrFail($id);
 

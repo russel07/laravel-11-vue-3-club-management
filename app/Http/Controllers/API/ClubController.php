@@ -14,7 +14,7 @@ class ClubController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         $clubs = Club::with('sports')->get();
         return $this->sendResponse($clubs, '');
@@ -59,7 +59,7 @@ class ClubController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $club = Club::findOrFail($id);
 
@@ -72,7 +72,7 @@ class ClubController extends BaseController
         return $this->sendResponse($club, '');
     }
 
-    public function bySports ($sport_id) 
+    public function bySports (Request $request, $sport_id) 
     {
         $clubs = Club::whereHas('sports', function ($query) use ($sport_id) {
             $query->where('sport_id', $sport_id);
@@ -132,7 +132,7 @@ class ClubController extends BaseController
      * @param   int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy( $id )
+    public function destroy( Request $request, $id )
     {
         $club = Club::findOrFail($id);
 

@@ -6,7 +6,17 @@
         {{ sport.name }}
         <template #footer>
           <el-button size="small" @click="handleEdit(sport)">Edit</el-button>
-              <el-button size="small" type="danger" @click="handleDelete(sport.id)">Delete</el-button>
+          <el-popconfirm
+            confirm-button-text="Yes"
+            cancel-button-text="No"
+            icon-color="#626AEF"
+            title="Are you sure to delete this?"
+            @confirm="handleDelete(sport.id)"
+          >
+            <template #reference>
+              <el-button type="danger" size="small">Delete</el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-card>
     </div>
@@ -27,9 +37,10 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from 'vue';
+import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
-import axios from 'axios';
+import http from "../http/http-common";
+import {loader} from '../composables/Loader';
 
 export default {
   name: 'Sports',
@@ -41,7 +52,8 @@ export default {
       id: null,
       name: '',
     });
-
+    const alert = inject('alert');
+    const { success, error } = alert();
     const sports = ref([]);
     const filteredSports = ref([]);
     const queryArg = ref(null);
@@ -49,6 +61,7 @@ export default {
     const sportForm = ref(null);
     const dialogFormVisible = ref(false);
     const dialogTitle = ref('');
+    const { startLoading, stopLoading } = loader();
 
     const rules = reactive({
       name: [
@@ -57,10 +70,12 @@ export default {
     });
 
     const fetchSports = async () => {
+      startLoading('Fetching sports...');
       try {
-        const response = await axios.get('http://lara-rest.test/api/sports');
+        const response = await http.get("sports");
         sports.value = response.data.data;
         filteredSports.value = response.data.data;
+        stopLoading();
       } catch (error) {
         console.error('Failed to fetch sports:', error.response.data);
       }
@@ -87,17 +102,31 @@ export default {
         if (valid) {
           try {
             if (isEditing.value) {
-              const response = await axios.put(`http://lara-rest.test/api/sports/${form.id}`, form);
+              startLoading('Updating sports...');
+              const response = await http.put(`sports/${form.id}`, form);
+              stopLoading();
               const index = sports.value.findIndex(sport => sport.id === response.data.id);
-              sports.value.splice(index, 1, response.data.data);
-              isEditing.value = false;
+              if(response.data.success) {
+                sports.value.splice(index, 1, response.data.data);
+                success(response.data.message);
+              } else {
+                error(response.data.message);
+              }
             } else {
-              const response = await axios.post('http://lara-rest.test/api/sports', form);
-              sports.value.push(response.data);
+              startLoading('Storing sports...');
+              const response = await http.post('sports', form);
+              stopLoading();
+              if(response.data.success) {
+                sports.value.push(response.data.data);
+                success(response.data.message);
+              } else {
+                error(response.data.message);
+              }
             }
+            
             resetForm();
           } catch (error) {
-            console.error('Failed to save sport:', error.response.data);
+           // error(error.response);
           }
         }
       });
@@ -122,10 +151,18 @@ export default {
 
     const handleDelete = async (id) => {
       try {
-        await axios.delete(`http://lara-rest.test/api/sports/${id}`);
-        sports.value = sports.value.filter(sport => sport.id !== id);
+        startLoading('Deleting sports...');
+        const response = await http.delete(`sports/${id}`);
+        stopLoading();
+        if(response.data.success) {
+          success(response.data.message);
+          fetchSports();
+        } else {
+          error(response.data.message);
+        }
+        
       } catch (error) {
-        console.error('Failed to delete sport:', error.response.data);
+        error('Failed to delete sport:', error.response.data);
       }
     };
 

@@ -14,7 +14,7 @@ class SportController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         $sports = Sport::all();
         return $this->sendResponse($sports, '');
@@ -51,7 +51,7 @@ class SportController extends BaseController
      * @param  \App\Models\Sport  $sport
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $sport = Sport::findOrFail($id);
 
@@ -92,7 +92,7 @@ class SportController extends BaseController
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy( $id )
+    public function destroy( Request $request, $id )
     {
         $sport = Sport::findOrFail($id);
 
