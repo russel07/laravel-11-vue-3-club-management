@@ -35,9 +35,10 @@
 </template>
 
 <script>
-  import { reactive, ref, onMounted } from 'vue';
+  import { inject, reactive, ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import axios from 'axios';
+  import http from "../../http/http-common";
+  import { loader } from '../../composables/Loader';
 
   export default {
     name: 'Login',
@@ -45,7 +46,10 @@
       const form = reactive({
         email: '',
         password: '',
-      });
+      }); 
+      const alert = inject('alert');
+      const { error } = alert();
+      const { startLoading, stopLoading } = loader();
 
       const rules = reactive({
         email: [
@@ -75,18 +79,22 @@
         loginForm.value.validate(async (valid) => {
           if (valid) {
             try {
-              const response = await axios.post('http://lara-rest.test/api/login', form);
-              localStorage.setItem('_GymAppUserToken', response.data.data.token);
-              let user = response.data.data.user;
-              localStorage.setItem('_GymAppLoggedInUser',JSON.stringify(user));
+              startLoading('Authenticating...');
+              const response = await http.post('login', form);
+              stopLoading();
+              if( response.data.success ) {
+                localStorage.setItem('_GymAppUserToken', response.data.data.token);
+                let user = response.data.data.user;
+                localStorage.setItem('_GymAppLoggedInUser',JSON.stringify(user));
 
-              router.push('/');
-            } catch (error) {
-              console.error('Login failed:', error.response.data);
-              // Handle login error, e.g., show error message
+                router.push('/');
+              } else {
+                error(response.data.message);
+              }
+              
+            } catch (err) {
+              error(err.response.data.message);
             }
-          } else {
-            console.log('Validation failed');
           }
         });
       };

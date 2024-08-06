@@ -65,7 +65,7 @@
 import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
 import http from "../http/http-common";
-import {loader} from '../composables/Loader';
+import { loader } from '../composables/Loader';
 
 export default {
 name: 'Clubs',
