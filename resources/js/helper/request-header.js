@@ -1,19 +1,16 @@
-export default function requestHeader() {
-    let token =  localStorage.getItem("_GymAppUserToken");
+export default function requestHeader(isMultipart = false) {
+    let token = localStorage.getItem("_GymAppUserToken");
 
-    if (token) {
-        return {
-            "Content-type": "application/json;charset=UTF-8",
-            "Content-type": "multipart/form-data",
-            "Access-Control-Allow-Origin": "*",
-            'x-access-token': token,
-            'Authorization' : 'Bearer '+token
-        };
+    let headers = {
+        'Authorization': token ? `Bearer ${token}` : '',
+    };
+
+    if (isMultipart) {
+        headers['Content-Type'] = 'multipart/form-data';
     } else {
-        return {
-            "Content-type": "application/json;charset=UTF-8",
-            "Access-Control-Allow-Origin": "*",
-            'content-type': 'multipart/form-data',
-        };
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
+
+    return headers;
 }
+

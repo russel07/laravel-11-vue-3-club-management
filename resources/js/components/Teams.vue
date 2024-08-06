@@ -4,13 +4,23 @@
     <div class="list-card">
       <el-card class="team-item" v-for="team in filteredTeams" :key="team.id">
         <template #header>{{ team.name }}</template>
+        <p><strong>Club:</strong> {{ team.club.name }}</p>
         <p><strong>Coach:</strong> {{ team.coach_name }}</p>
         <p><strong>Email:</strong> {{ team.coach_email }}</p>
         <p><strong>Sports:</strong> {{ team.sport.name }}</p>
-        <p><strong>Club:</strong> {{ team.club.name }}</p>
         <template #footer>
           <el-button size="small" @click="editTeam(team)">Edit</el-button>
-          <el-button size="small" type="danger" @click="deleteTeam(team.id)">Delete</el-button>
+          <el-popconfirm
+            confirm-button-text="Yes"
+            cancel-button-text="No"
+            icon-color="#626AEF"
+            title="Are you sure to delete this?"
+            @confirm="deleteTeam(team.id)"
+          >
+            <template #reference>
+              <el-button type="danger" size="small">Delete</el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-card>
     </div>
@@ -48,9 +58,10 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
+import http from "../http/http-common";
+import {loader} from '../composables/Loader';
 
 export default {
   name: 'Teams',
@@ -66,7 +77,8 @@ export default {
       sport_id: '',
       club_id: '',
     });
-
+    const alert = inject('alert');
+    const { success, error } = alert();
     const teams = ref([]);
     const filteredTeams = ref([]);
     const queryArg = ref(null);
@@ -76,6 +88,7 @@ export default {
     const teamForm = ref(null);
     const dialogFormVisible = ref(false);
     const dialogTitle = ref('');
+    const { startLoading, stopLoading } = loader();
 
     const rules = reactive({
       name: [
@@ -97,31 +110,42 @@ export default {
     });
 
     const fetchTeams = async () => {
+      startLoading('Fetching teams...');
       try {
-        const response = await axios.get('http://lara-rest.test/api/teams');
+        const response = await http.get('teams');
         teams.value = response.data.data;
         filteredTeams.value = response.data.data;
-      } catch (error) {
-        console.error('Failed to fetch teams:', error.response.data);
+      } catch (err) {
+        error(err.response.data.message);
       }
+      stopLoading();
     };
 
     const fetchSports = async () => {
+      startLoading('Fetching sports...');
       try {
-        const response = await axios.get('http://lara-rest.test/api/sports');
+        const response = await http.get('sports');
         sports.value = response.data.data;
-      } catch (error) {
-        console.error('Failed to fetch sports:', error.response.data);
+      } catch (err) {
+        error(err.response.data.message);
       }
+      stopLoading();
     };
 
     const fetchClubs = async (sport_id) => {
+      startLoading('Fetching clubs...');
       try {
-        const response = await axios.get(`http://lara-rest.test/api/clubs-by-sports/${sport_id}`);
-        clubs.value = response.data.data;
-      } catch (error) {
-        console.error('Failed to fetch clubs:', error.response.data);
+        const response = await http.get(`clubs-by-sports/${sport_id}`);
+        stopLoading();
+        if( response.data.success ) {
+          clubs.value = response.data.data;
+        } else {
+          error(response.data.message);
+        }
+      } catch (err) {
+        error(err.response.data.message);
       }
+      stopLoading();
     };
 
     const onAddNew = () => {
@@ -145,18 +169,32 @@ export default {
         if (valid) {
           try {
             if (isEditing.value) {
-              const response = await axios.put(`http://lara-rest.test/api/teams/${form.id}`, form);
-              const index = teams.value.findIndex(team => team.id === response.data.data.id);
-              fetchTeams();
+              startLoading('Updating team...');
+              const response = await http.put(`teams/${form.id}`, form);
+              stopLoading();
+              if(response.data.success) {
+                const index = teams.value.findIndex(team => team.id === response.data.data.id);
+                fetchTeams();
+                success(response.data.message);
+              } else {
+                error(response.data.message);
+              }
               isEditing.value = false;
             } else {
-              const response = await axios.post('http://lara-rest.test/api/teams', form);
-              fetchTeams();
+              startLoading('Creating team...');
+              const response = await http.post('teams', form);
+              stopLoading();
+              if(response.data.success) {
+                fetchTeams();
+              } else {
+                error(response.data.message);
+              }
             }
             resetForm();
-          } catch (error) {
-            console.error('Failed to save team:', error.response.data);
+          } catch (err) {
+            error(err.response.data.message);
           }
+          stopLoading();
         }
       });
     };
@@ -189,10 +227,17 @@ export default {
 
     const deleteTeam = async (id) => {
       try {
-        await axios.delete(`http://lara-rest.test/api/teams/${id}`);
-        teams.value = teams.value.filter(team => team.id !== id);
-      } catch (error) {
-        console.error('Failed to delete team:', error.response.data);
+        startLoading('Deleting team...');
+        const response = await http.delete(`teams/${id}`);
+        stopLoading();
+        if(response.data.success) {
+          fetchTeams();
+          success(response.data.message);
+        } else {
+          error(response.data.message);
+        }
+      } catch (err) {
+        error(err.response.data.message);
       }
     };
 

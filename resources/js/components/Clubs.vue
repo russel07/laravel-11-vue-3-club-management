@@ -13,7 +13,17 @@
         </div>
         <template #footer>
           <el-button size="small" @click="editClub(club)">Edit</el-button>
-          <el-button size="small" type="danger" @click="deleteClub(club.id)">Delete</el-button>
+          <el-popconfirm
+            confirm-button-text="Yes"
+            cancel-button-text="No"
+            icon-color="#626AEF"
+            title="Are you sure to delete this?"
+            @confirm="deleteClub(club.id)"
+          >
+            <template #reference>
+              <el-button type="danger" size="small">Delete</el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-card>
     </div>
@@ -52,9 +62,10 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from 'vue';
+import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
-import axios from 'axios';
+import http from "../http/http-common";
+import {loader} from '../composables/Loader';
 
 export default {
 name: 'Clubs',
@@ -71,6 +82,8 @@ setup() {
     sports: [],
   });
 
+  const alert = inject('alert');
+  const { success, error } = alert();
   const clubs = ref([]);
   const filteredClubs = ref([]);
   const queryArg = ref(null);
@@ -79,6 +92,7 @@ setup() {
   const clubForm = ref(null);
   const dialogFormVisible = ref(false);
   const dialogTitle = ref('');
+  const { startLoading, stopLoading } = loader();
 
   const rules = reactive({
     name: [
@@ -100,22 +114,26 @@ setup() {
   });
 
   const fetchClubs = async () => {
+    startLoading('Fetching clubs...');
     try {
-      const response = await axios.get('http://lara-rest.test/api/clubs');
+      const response = await http.get('clubs');
+      stopLoading();
       clubs.value = response.data.data;
       filteredClubs.value = response.data.data;
-    } catch (error) {
-      console.error('Failed to fetch clubs:', error.response.data);
+    } catch (err) {
+      error(err.response.data.message);
     }
   };
 
   const fetchSports = async () => {
     try {
-      const response = await axios.get('http://lara-rest.test/api/sports');
+      startLoading('Fetching sports...');
+      stopLoading();
+      const response = await http.get('sports');
       sports.value = response.data.data;
     
-    } catch (error) {
-      console.error('Failed to fetch sports:', error.response.data);
+    } catch (err) {
+      error(err.response.data.message);
     }
   };
 
@@ -140,17 +158,31 @@ setup() {
       if (valid) {
         try {
           if (isEditing.value) {
-            const response = await axios.put(`http://lara-rest.test/api/clubs/${form.id}`, form);
-            const index = clubs.value.findIndex(club => club.id === response.data.data.id);
-            fetchClubs();
+            startLoading('Updating club...');
+            const response = await http.put(`clubs/${form.id}`, form);
+            stopLoading();
+            if(response.data.success) {
+              fetchClubs();
+              success(response.data.message);
+            } else {
+              error(response.data.message);
+            }
             isEditing.value = false;
           } else {
-            const response = await axios.post('http://lara-rest.test/api/clubs', form);
-            clubs.value.push(response.data.data);
+            startLoading('Storing club...');
+            const response = await http.post('clubs', form);
+            stopLoading();
+            
+            if(response.data.success) {
+              clubs.value.push(response.data.data);
+              success(response.data.message);
+            } else {
+              error(response.data.message);
+            }
           }
           resetForm();
-        } catch (error) {
-          console.error('Failed to save club:', error.response.data);
+        } catch (err) {
+          error(err.response.data.message);
         }
       }
     });
@@ -185,11 +217,19 @@ setup() {
   };
 
   const deleteClub = async (id) => {
+
     try {
-      await axios.delete(`http://lara-rest.test/api/clubs/${id}`);
-      clubs.value = clubs.value.filter(club => club.id !== id);
-    } catch (error) {
-      console.error('Failed to delete club:', error.response.data);
+      startLoading('Deleting club...');
+      const response = await http.delete(`clubs/${id}`);
+      stopLoading();
+      if(response.data.success) {
+        success(response.data.message);
+        fetchClubs();
+      } else {
+        error(response.data.message);
+      }
+    } catch (err) {
+      error(err.response.data.message);
     }
   };
 

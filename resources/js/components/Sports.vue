@@ -75,10 +75,10 @@ export default {
         const response = await http.get("sports");
         sports.value = response.data.data;
         filteredSports.value = response.data.data;
-        stopLoading();
       } catch (error) {
         console.error('Failed to fetch sports:', error.response.data);
       }
+      stopLoading();
     };
 
     const onAddNew = () => {
@@ -104,10 +104,8 @@ export default {
             if (isEditing.value) {
               startLoading('Updating sports...');
               const response = await http.put(`sports/${form.id}`, form);
-              stopLoading();
-              const index = sports.value.findIndex(sport => sport.id === response.data.id);
               if(response.data.success) {
-                sports.value.splice(index, 1, response.data.data);
+                fetchSports();
                 success(response.data.message);
               } else {
                 error(response.data.message);
@@ -115,7 +113,6 @@ export default {
             } else {
               startLoading('Storing sports...');
               const response = await http.post('sports', form);
-              stopLoading();
               if(response.data.success) {
                 sports.value.push(response.data.data);
                 success(response.data.message);
@@ -123,7 +120,7 @@ export default {
                 error(response.data.message);
               }
             }
-            
+            stopLoading();
             resetForm();
           } catch (error) {
            // error(error.response);
