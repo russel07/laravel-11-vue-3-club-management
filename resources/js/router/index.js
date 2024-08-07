@@ -7,6 +7,7 @@ import Login from "../components/auth/Login";
 import SuperAdmin from "../components/users/SuperAdmin";
 import AthleteRegister from "../components/auth/AthleteRegister";
 import ForgotPassword from "../components/auth/ForgotPassword";
+import Logout from "../components/auth/Logout";
 
 const routes = [
     {
@@ -68,7 +69,12 @@ const routes = [
         meta: {
             guest: true
         }
-	}
+	},
+    {
+        path: '/logout',
+        name: 'Logout',
+        component: Logout
+    }
 ];
 
 const router = createRouter({
@@ -79,7 +85,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const isAuthenticated 	= Boolean(localStorage.getItem('_GymAppUserToken'));
 	const loggedInUser 		= JSON.parse(localStorage.getItem('_GymAppLoggedInUser'));
-    const userRole 			= loggedInUser.user_type;
+    let userRole 			= '';
+    
+    if( loggedInUser ) {
+        userRole = loggedInUser.user_type;
+    }
 
     if ( to.meta.requiresAuth ) {
         if ( !isAuthenticated ) {
