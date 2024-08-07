@@ -39,4 +39,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/teams/{id}', [TeamController::class, 'show'])->name('get-team');
     Route::put('/teams/{id}', [TeamController::class, 'update'])->name('edit-team');
     Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('delete-team');
+
+    //User EndPoints
+    Route::get('/users-by-type/{type}', [UserController::class, 'byUserType'])->name('users-by-type');
 });

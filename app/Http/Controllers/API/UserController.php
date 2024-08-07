@@ -8,7 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Http\JsonResponse;
-     
+use Workbench\App\Models\User as ModelsUser;
+
 class UserController extends BaseController
 {
     /**
@@ -63,6 +64,11 @@ class UserController extends BaseController
         else{ 
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
+    }
+
+    public function byUserType( Request $request, $type ) {
+        $users = User::where('user_type', $type)->get();
+        return $this->sendResponse($users, '');
     }
 
     private function getUserData ( $user ) {

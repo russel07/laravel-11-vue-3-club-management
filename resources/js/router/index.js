@@ -14,7 +14,8 @@ const routes = [
 		name:'Dashboard',
 		component: Dashboard,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+			roles: ['Admin', 'Club Admin', 'Coach', 'Athlete']
         }
 	},
 	{
@@ -22,7 +23,8 @@ const routes = [
 		name:'Sports',
 		component: Sports,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+			roles: ['Admin']
         }
 	},
 	{
@@ -30,7 +32,8 @@ const routes = [
 		name:'Clubs',
 		component: Clubs,
         meta: {
-            requiresAuth: true
+            requiresAuth: true, 
+			roles: ['Admin']
         }
 	},
 	{
@@ -38,7 +41,8 @@ const routes = [
 		name:'Teams',
 		component: Teams,
         meta: {
-            requiresAuth: true
+            requiresAuth: true, 
+			roles: ['Club Admin', 'Coach']
         }
 	},
     {
@@ -71,5 +75,26 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes,
 });
+
+router.beforeEach((to, from, next) => {
+    const isAuthenticated 	= Boolean(localStorage.getItem('_GymAppUserToken'));
+	const loggedInUser 		= JSON.parse(localStorage.getItem('_GymAppLoggedInUser'));
+    const userRole 			= loggedInUser.user_type;
+
+    if ( to.meta.requiresAuth ) {
+        if ( !isAuthenticated ) {
+            next({ name: 'Login' });
+        } else if (to.meta.roles && !to.meta.roles.includes(userRole)) {
+            next({ name: 'Dashboard' }); 
+        } else {
+            next();
+        }
+    } else if ( to.meta.guest && isAuthenticated ) {
+        next({ name: 'Dashboard' });
+    } else {
+        next(); 
+    }
+});
+
 
 export default router;
