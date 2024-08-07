@@ -33,19 +33,29 @@
           <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
         </el-select>
       </el-form-item>
+
       <el-form-item label="Club" prop="club_id">
         <el-select v-model="form.club_id" placeholder="Select Club">
           <el-option v-for="club in clubs" :key="club.id" :label="club.name" :value="club.id" />
         </el-select>
       </el-form-item>
+      
       <el-form-item label="Team Name" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="Coach Name" prop="coach_name">
-        <el-input v-model="form.coach_name" />
+
+      <el-form-item label="Coach" prop="coach_id">
+        <el-select v-model="form.coach_id" placeholder="Select Coach"  @change="getCoachInfo">
+          <el-option v-for="coach in coaches" :key="coach.id" :label="coach.name" :value="coach.id" />
+        </el-select>
       </el-form-item>
+
+      <el-form-item label="Coach Name" prop="coach_name">
+        <el-input v-model="form.coach_name" disabled/>
+      </el-form-item>
+
       <el-form-item label="Coach Email" prop="coach_email">
-        <el-input v-model="form.coach_email" />
+        <el-input v-model="form.coach_email" disabled/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -72,6 +82,7 @@ export default {
     const form = reactive({
       id: null,
       name: '',
+      coach_id: '',
       coach_name: '',
       coach_email: '',
       sport_id: '',
@@ -84,6 +95,7 @@ export default {
     const queryArg = ref(null);
     const sports = ref([]);
     const clubs = ref([]);
+    const coaches = ref([]);
     const isEditing = ref(false);
     const teamForm = ref(null);
     const dialogFormVisible = ref(false);
@@ -105,6 +117,9 @@ export default {
         { required: true, message: 'Please select a sport', trigger: 'change' }
       ],
       club_id: [
+        { required: true, message: 'Please select a club', trigger: 'change' }
+      ],
+      coach_id: [
         { required: true, message: 'Please select a club', trigger: 'change' }
       ]
     });
@@ -148,8 +163,37 @@ export default {
       stopLoading();
     };
 
+    const fetchCoaches = async () => {
+      startLoading('Fetching coaches...');
+      try {
+        const response = await http.get(`users-by-type/Coach`);
+        stopLoading();
+        if( response.data.success ) {
+          coaches.value = response.data.data;
+        } else {
+          error(response.data.message);
+        }
+      } catch (err) {
+        error(err.response.data.message);
+      }
+      stopLoading();
+    };
+
+    const getCoachInfo = () => {
+      if (form.coach_id) {
+        let id = form.coach_id;
+        let coach = coaches.value.find(coach => coach.id === id);
+        if (coach) {
+          form.coach_name = coach.name;
+          form.coach_email = coach.email;
+        }
+      }
+    };
+
+
     const onAddNew = () => {
       getTitle();
+      fetchCoaches();
       dialogFormVisible.value = true;
     }
 
@@ -200,27 +244,29 @@ export default {
     };
 
     const resetForm = () => {
-      form.id = null;
-      form.name = '';
-      form.coach_name = '';
-      form.coach_email = '';
-      form.club_id = '';
-      form.sport_id = '';
-      isEditing.value = false;
+      form.id           = null;
+      form.name         = '';
+      form.coach_name   = '';
+      form.coach_email  = '';
+      form.club_id      = '';
+      form.sport_id     = '';
+      form.coach_id     = '';
+      isEditing.value   = false;
       teamForm.value.resetFields();
       dialogFormVisible.value = false;
       getTitle();
     };
 
     const editTeam = (team) => {
-      form.id = team.id;
-      form.name = team.name;
-      form.coach_name = team.coach_name;
-      form.coach_email = team.coach_email;
-      form.sport_id = team.sport_id;
+      form.id           = team.id;
+      form.name         = team.name;
+      form.coach_name   = team.coach_name;
+      form.coach_email  = team.coach_email;
+      form.sport_id     = team.sport_id;
       filterClubs();
-      form.club_id = team.club_id;
-      isEditing.value = true;
+      form.club_id      = team.club_id;
+      form.coach_id     = team.coach_id;
+      isEditing.value   = true;
       dialogFormVisible.value = true;
       getTitle();
     };
@@ -264,6 +310,7 @@ export default {
       teams,
       sports,
       clubs,
+      coaches,
       rules,
       teamForm,
       isEditing,
@@ -276,7 +323,8 @@ export default {
       onAddNew,
       onSearch,
       dialogFormVisible,
-      dialogTitle
+      dialogTitle,
+      getCoachInfo
     };
   }
 };

@@ -17,7 +17,8 @@ class TeamController extends BaseController
      */
     public function index(Request $request)
     {
-        $teams = Team::with(['club', 'sport'])->get();
+        $user_id = $request->user()->id;
+        $teams = Team::where('coach_id', $user_id)->with(['club', 'sport'])->get();
         return $this->sendResponse($teams, '');
     }
 
@@ -36,6 +37,7 @@ class TeamController extends BaseController
             'coach_email' => 'required|string|email|max:255',
             'club_id' => 'required|exists:clubs,id',
             'sport_id' => 'required|exists:sports,id',
+            'coach_id' => 'required|exists:users,id',
         ]);
      
         if($validator->fails()){
@@ -57,10 +59,15 @@ class TeamController extends BaseController
      */
     public function show(Request $request, $id)
     {
+        $user_id = $request->user()->id;
         $team = Team::findOrFail($id);
 
         if(!$team) {
             return $this->sendError('Invalid Request.', ['No team found']);   
+        }
+
+        if($team->coach_id !== $user_id) {
+            return $this->sendError('You don\'t have permission to view this team', ['You don\'t have permission to view this team']);  
         }
 
         $team->load(['club', 'sport']);
@@ -77,12 +84,14 @@ class TeamController extends BaseController
      */
     public function update(Request $request, $id)
     {
+        $user_id = $request->user()->id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'coach_name' => 'required|string|max:255',
             'coach_email' => 'required|string|email|max:255',
             'club_id' => 'required|exists:clubs,id',
             'sport_id' => 'required|exists:sports,id',
+            'coach_id' => 'required|exists:users,id',
         ]);
      
         if($validator->fails()){
@@ -95,6 +104,10 @@ class TeamController extends BaseController
 
         if(!$team) {
             return $this->sendError('Invalid Request.', ['No team found']);   
+        }
+
+        if($team->coach_id !== $user_id) {
+            return $this->sendError('You don\'t have permission to update this team', ['You don\'t have permission to update this team']);  
         }
 
         $validatedData = $request->all();
@@ -114,10 +127,15 @@ class TeamController extends BaseController
      */
     public function destroy( Request $request, $id )
     {
+        $user_id = $request->user()->id;
         $team = Team::findOrFail($id);
 
         if(!$team) {
             return $this->sendError('Invalid Request.', ['No team found']);   
+        }
+
+        if($team->coach_id !== $user_id) {
+            return $this->sendError('You don\'t have permission to delete this team', ['You don\'t have permission to delete this team']);  
         }
 
         if($team->delete()) {

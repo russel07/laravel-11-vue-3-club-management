@@ -11,6 +11,7 @@ class Team extends Model
 
     protected $fillable = [
         'name',
+        'coach_id',
         'coach_name',
         'coach_email',
         'club_id',
@@ -31,5 +32,14 @@ class Team extends Model
     public function sport()
     {
         return $this->belongsTo(Sport::class);
+    }
+    
+
+    /**
+     * Get the sport that the team plays.
+     */
+    public function coach()
+    {
+        return $this->belongsTo(User::class);
     }
 }

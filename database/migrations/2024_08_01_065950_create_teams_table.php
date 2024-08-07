@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('coach_name');
             $table->string('coach_email');
+            $table->foreignId('coach_id')->constrained()->onDelete('cascade');
             $table->foreignId('club_id')->constrained()->onDelete('cascade');
             $table->foreignId('sport_id')->constrained()->onDelete('cascade');
             $table->timestamps();
@@ -28,8 +29,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('teams');
-        /*Schema::table('teams', function (Blueprint $table) {
-            //
-        });*/
     }
 };
