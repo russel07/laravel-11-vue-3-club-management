@@ -5,6 +5,9 @@ import Clubs from "../components/Clubs";
 import Teams from "../components/Teams";
 import Login from "../components/auth/Login";
 import SuperAdmin from "../components/users/SuperAdmin";
+import ClubAdmin from "../components/users/ClubAdmin";
+import Coach from "../components/users/Coach";
+import Athlete from "../components/users/Athlete";
 import AthleteRegister from "../components/auth/AthleteRegister";
 import ForgotPassword from "../components/auth/ForgotPassword";
 import Logout from "../components/auth/Logout";
@@ -46,6 +49,42 @@ const routes = [
 			roles: ['Club Admin', 'Coach']
         }
 	},
+    {
+        path: '/users/super-admin',
+        name: 'SuperAdmin',
+        component: SuperAdmin,
+        meta: {
+            requiresAuth: true,
+			roles: ['Admin'] 
+        }
+    },
+    {
+        path: '/users/club-admin',
+        name: 'SuperAdmin',
+        component: ClubAdmin,
+        meta: {
+            requiresAuth: true,
+			roles: ['Admin'] 
+        }
+    },
+    {
+        path: '/users/coach',
+        name: 'ManageCoach',
+        component: Coach,
+        meta: {
+            requiresAuth: true,
+			roles: ['Club Admin'] 
+        }
+    },
+    {
+        path: '/users/athlete',
+        name: 'ManageAthlete',
+        component: Athlete,
+        meta: {
+            requiresAuth: true,
+			roles: ['Coach'] 
+        }
+    },
     {
 		path: '/register/athlete',
 		name:'AthleteRegister',

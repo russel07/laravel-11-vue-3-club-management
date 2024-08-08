@@ -10,7 +10,7 @@ use App\Http\Controllers\API\ClubController;
 use App\Http\Controllers\API\TeamController;
  
   
-Route::post('user/register', [UserController::class, 'create']);
+Route::post('user/register', [UserController::class, 'register']);
 Route::post('login', [RegisterController::class, 'login']);
 
 Route::get('/user', function (Request $request) {
@@ -41,5 +41,6 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('delete-team');
 
     //User EndPoints
+    Route::post('user/create', [UserController::class, 'create']);
     Route::get('/users-by-type/{type}', [UserController::class, 'byUserType'])->name('users-by-type');
 });

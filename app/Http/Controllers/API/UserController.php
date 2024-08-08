@@ -17,7 +17,7 @@ class UserController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request): JsonResponse
+    public function register(Request $request): JsonResponse
     {
         $input = $request->all();
 
@@ -41,6 +41,7 @@ class UserController extends BaseController
 
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
+        $user->load('teams');
         $success['token'] =  $user->createToken('MyApp')->accessToken;
         $success['user'] =  $this->getUserData( $user );
    
@@ -66,10 +67,59 @@ class UserController extends BaseController
         } 
     }
 
-    public function byUserType( Request $request, $type ) {
-        $users = User::where('user_type', $type)->get();
+    /**
+     * Create User api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Request $request): JsonResponse
+    {
+        $input = $request->all();
+
+        $fields = [
+            'name'      => 'required',
+            'gender'    => 'required',
+            'email'     => 'required|email',
+            'password'  => 'required',
+        ];
+
+        if ( isset($input['user_type']) && 'Athlete' === $input['user_type']) {
+            $fields['team_id'] = 'required';
+            $fields['birth_year'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $fields);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input['password'] = bcrypt($input['password']);
+        $user = User::create($input);
+
+        $user->load('teams');
+        
+        return $this->sendResponse($user, $input['user_type'].' register successfully.');
+    }
+
+    public function byUserType(Request $request, $type) {
+        switch ($type) {
+            case 'Coach':
+                $users = User::with('teams')->where('user_type', $type)->get();
+                break;
+    
+            case 'Athlete':
+                $users = User::with('team')->where('user_type', $type)->get();
+                break;
+    
+            default:
+                $users = User::where('user_type', $type)->get();
+                break;
+        }
+    
         return $this->sendResponse($users, '');
     }
+    
 
     private function getUserData ( $user ) {
        return [
@@ -80,7 +130,8 @@ class UserController extends BaseController
             'user_type'         =>  $user->user_type,
             'birth_year'        =>  $user->birth_year,
             'email'             =>  $user->email,
-            'user_type'         =>  $user->user_type
+            'user_type'         =>  $user->user_type,
+            'teams'             => $user->teams,
         ];
     }
 }

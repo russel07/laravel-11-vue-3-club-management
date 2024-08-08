@@ -15,31 +15,31 @@
         <template v-if="'Admin' === userType">
           <el-sub-menu index="1">
             <template #title>User</template>
-            <el-menu-item index="users/super-admin">Super Admin</el-menu-item>
-            <el-menu-item index="users/club-admin">Club Admin</el-menu-item>
+            <el-menu-item index="/users/super-admin">Super Admin</el-menu-item>
+            <el-menu-item index="/users/club-admin">Club Admin</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="2">
             <template #title>Manage</template>
-            <el-menu-item index="sports">Sports</el-menu-item>
-            <el-menu-item index="clubs">Clubs</el-menu-item>
-            <el-menu-item index="teams">Teams</el-menu-item>
+            <el-menu-item index="/sports">Sports</el-menu-item>
+            <el-menu-item index="/clubs">Clubs</el-menu-item>
+            <el-menu-item index="/teams">Teams</el-menu-item>
           </el-sub-menu>
         </template>
 
         <template v-else-if="'Club Admin' == userType">
-          <el-menu-item index="users/coach">Coach</el-menu-item>
-          <el-menu-item index="teams">Teams</el-menu-item>
+          <el-menu-item index="/users/coach">Coach</el-menu-item>
+          <el-menu-item index="/teams">Teams</el-menu-item>
         </template>
 
         <template v-else-if="'Coach' === userType">
-          <el-menu-item index="teams">Teams</el-menu-item>
-          <el-menu-item index="users/athlete">Athlete</el-menu-item>
+          <el-menu-item index="/teams">Teams</el-menu-item>
+          <el-menu-item index="/users/athlete">Athlete</el-menu-item>
         </template>
 
         <el-sub-menu index="3" v-if="loggedInUser">
           <template #title>{{loggedInUser.name}}</template>
-          <el-menu-item index="change-password">Change Pasword</el-menu-item>
-          <el-menu-item @click="logout" index="logout">Logout</el-menu-item>
+          <el-menu-item index="/change-password">Change Pasword</el-menu-item>
+          <el-menu-item @click="logout" index="/logout">Logout</el-menu-item>
         </el-sub-menu>
       </el-menu>
       <div class="h-6" />

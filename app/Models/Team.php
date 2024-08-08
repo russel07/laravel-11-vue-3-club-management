@@ -40,6 +40,14 @@ class Team extends Model
      */
     public function coach()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'coach_id');
+    }
+
+    /**
+     * Get the athlete associated with the team.
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 }

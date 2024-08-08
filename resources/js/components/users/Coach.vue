@@ -1,21 +1,15 @@
 <template>
   <div class="wrapper">
-    <h1>Coach</h1>
+    <ManageUser :userType="'Coach'"/>
   </div>
 </template>
 
 <script>
-  import { ref } from 'vue';
+  import ManageUser from './ManageUser.vue';
   export default {
     name: 'Coach',
     components: {
+      ManageUser
     },
-
-    setup(){
-
-      return {
-
-      }
-    }
   }
 </script>
