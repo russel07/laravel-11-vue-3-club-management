@@ -15,7 +15,7 @@
         <template v-if="'Admin' === userType">
           <el-sub-menu index="1">
             <template #title>User</template>
-            <el-menu-item index="/users/admin">Super Admin</el-menu-item>
+            <el-menu-item index="/users/admin">Admin</el-menu-item>
             <el-menu-item index="/users/club-admin">Club Admin</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="2">
@@ -26,13 +26,12 @@
         </template>
 
         <template v-else-if="'Club Admin' == userType">
-          <el-menu-item index="/users/coach">Coach</el-menu-item>
+          <el-menu-item index="/coach">Coach</el-menu-item>
           <el-menu-item index="/teams">Teams</el-menu-item>
         </template>
 
         <template v-else-if="'Coach' === userType">
-          <el-menu-item index="/teams">Teams</el-menu-item>
-          <el-menu-item index="/users/athlete">Athlete</el-menu-item>
+          <el-menu-item index="/athlete">Athlete</el-menu-item>
         </template>
 
         <el-sub-menu index="3" v-if="loggedInUser">
@@ -49,7 +48,7 @@
       <h1>{{ pageTitle }}</h1>
     </div>
     <div class="actions">
-      <el-button type="primary" @click="addNew">Add New</el-button>
+      <el-button v-if="addButton" type="primary" @click="addNew">{{ addButton }}</el-button>
       <el-input v-model="searchQuery" placeholder="Search..." class="search-input" @keyup="onSearch">
         <template #append>
         <el-button :icon="Search" @click="onSearch" />
@@ -65,7 +64,7 @@ import { useRouter } from 'vue-router';
 import { Search } from '@element-plus/icons-vue'
 export default {
   name: 'Header',
-  props: ['pageTitle'],
+  props: ['pageTitle', 'addButton'],
   emits: ['add-new', 'search'],
   setup(props, { emit }){
     const activeIndex = ref('/');

@@ -1,5 +1,5 @@
 <template>
-  <Header :pageTitle="'Team List'" @add-new="onAddNew" @search="onSearch" />
+  <Header :pageTitle="'Manage Team'" :addButton="'Register Team'" @add-new="onAddNew" @search="onSearch" />
   <div class="teams-container">
     <div class="list-card">
       <el-card class="team-item" v-for="team in filteredTeams" :key="team.id">
@@ -44,18 +44,16 @@
         <el-input v-model="form.name" />
       </el-form-item>
 
-      <el-form-item label="Coach" prop="coach_id">
-        <el-select v-model="form.coach_id" placeholder="Select Coach"  @change="getCoachInfo">
-          <el-option v-for="coach in coaches" :key="coach.id" :label="coach.name" :value="coach.id" />
-        </el-select>
+      <el-form-item v-if="!isEditing" label="Coach Email" prop="coach_email">
+        <el-input v-model="form.coach_email" @blur="getCoachInfo"/>
       </el-form-item>
 
-      <el-form-item label="Coach Name" prop="coach_name">
-        <el-input v-model="form.coach_name" disabled/>
+      <el-form-item v-if="!isEditing" label="Coach Name" prop="coach_name">
+        <el-input v-model="form.coach_name"/>
       </el-form-item>
 
-      <el-form-item label="Coach Email" prop="coach_email">
-        <el-input v-model="form.coach_email" disabled/>
+      <el-form-item v-if="!form.coach_id" label="Password" prop="password">
+        <el-input v-model="form.password"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -87,6 +85,7 @@ export default {
       coach_email: '',
       sport_id: '',
       club_id: '',
+      password: ''
     });
     const alert = inject('alert');
     const { success, error } = alert();
@@ -117,9 +116,6 @@ export default {
         { required: true, message: 'Please select a sport', trigger: 'change' }
       ],
       club_id: [
-        { required: true, message: 'Please select a club', trigger: 'change' }
-      ],
-      coach_id: [
         { required: true, message: 'Please select a club', trigger: 'change' }
       ]
     });
@@ -179,14 +175,26 @@ export default {
       stopLoading();
     };
 
-    const getCoachInfo = () => {
-      if (form.coach_id) {
-        let id = form.coach_id;
-        let coach = coaches.value.find(coach => coach.id === id);
-        if (coach) {
-          form.coach_name = coach.name;
-          form.coach_email = coach.email;
+    const getCoachInfo = async () => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (form.coach_email && emailRegex.test(form.coach_email)) {
+        let email = form.coach_email;
+        startLoading('Fetching coaches...');
+        try {
+          const response = await http.get(`user-by-email/${email}`);
+          stopLoading();
+          if( response.data.success && response.data.data ) {
+            form.coach_id = response.data.data.id;
+            form.coach_name = response.data.data.name;
+          } else {
+            form.coach_id = '';
+            form.coach_name = '';
+          }
+        } catch (err) {
+          error(err.response.data.message);
         }
+        stopLoading();
       }
     };
 

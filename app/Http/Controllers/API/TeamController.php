@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
      
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\User;
 use App\Models\Club;
 use App\Models\Team;
 use Validator;
@@ -46,21 +47,38 @@ class TeamController extends BaseController
      */
     public function store(Request $request)
     {
-
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => 'required|string|max:255',
             'coach_name' => 'required|string|max:255',
             'coach_email' => 'required|string|email|max:255',
             'club_id' => 'required|exists:clubs,id',
             'sport_id' => 'required|exists:sports,id',
-            'coach_id' => 'required|exists:users,id',
-        ]);
+        ];
+
+        if ( ! isset($validatedData['coach_id']) ) {
+            $rules['password'] = 'required';
+        }
+
+
+        $validator = Validator::make($request->all(), $rules);
      
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
         $validatedData = $request->all();
+
+        if ( ! isset($validatedData['coach_id']) ) {
+            $userData = [
+                'name' => $validatedData['coach_name'],
+                'email' => $validatedData['coach_email'],
+                'password' => bcrypt($validatedData['password']),
+                'user_type' => 'Coach'
+            ];
+
+            $user = User::create($userData);
+            $validatedData['coach_id'] = $user->id;
+        } 
 
         $team = Team::create($validatedData);
 

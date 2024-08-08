@@ -46,7 +46,7 @@ const routes = [
 		component: Teams,
         meta: {
             requiresAuth: true, 
-			roles: ['Club Admin', 'Coach']
+			roles: ['Club Admin']
         }
 	},
     {
@@ -68,7 +68,7 @@ const routes = [
         }
     },
     {
-        path: '/users/coach',
+        path: '/coach',
         name: 'ManageCoach',
         component: Coach,
         meta: {
@@ -77,7 +77,7 @@ const routes = [
         }
     },
     {
-        path: '/users/athlete',
+        path: '/athlete',
         name: 'ManageAthlete',
         component: Athlete,
         meta: {

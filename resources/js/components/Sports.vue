@@ -1,5 +1,5 @@
 <template>
-  <Header :pageTitle="'Sports List'" @add-new="onAddNew" @search="onSearch" />
+  <Header :pageTitle="'Manage Sports'" :addButton="'Add Sport'" @add-new="onAddNew" @search="onSearch" />
   <div class="sports-container">
     <div class="list-card">
       <el-card class="sports-item" v-for="sport in filteredSports" :key="sport.id">

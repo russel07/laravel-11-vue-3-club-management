@@ -1,5 +1,5 @@
 <template>
-  <Header :pageTitle="'Club List'" @add-new="onAddNew" @search="onSearch" />
+  <Header :pageTitle="'Manage Club'" :addButton="'Add Club'" @add-new="onAddNew" @search="onSearch" />
   <div class="clubs-container">
     <div class="list-card">
       <el-card class="club-item" v-for="club in filteredClubs" :key="club.id">

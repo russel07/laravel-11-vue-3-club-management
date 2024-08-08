@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <ManageUser :userType="'Club Admin'"/>
+    <ManageUser :userType="'Club Admin'" :addButton="'Add Club Admin'"/>
   </div>
 </template>
 

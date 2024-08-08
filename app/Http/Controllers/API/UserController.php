@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
+use App\Models\Club;
+use App\Models\Team;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Http\JsonResponse;
@@ -104,6 +106,26 @@ class UserController extends BaseController
         }
         
         return $this->sendResponse($user, $input['user_type'].' register successfully.');
+    }
+
+    public function get_coach( Request $request ) 
+    {
+        $user = $request->user();
+        if( 'Club Admin' === $user->user_type ) {
+            $clubIds = Club::where('manager_id', $user->id)->pluck('id')->toArray();
+            $userIds = Team::whereIn('club_id', $clubIds)->pluck('coach_id')->toArray();
+            $users = User::with('teams')->whereIn('id', $userIds)->where('user_type', 'Coach')->get();
+            return $this->sendResponse($users, '');
+        } else {
+            return $this->sendError('You don\'t have permission to view coach list', ['You don\'t have permission to view coach list']);
+        }
+    }
+
+    public function getUserByEmail( Request $request , $email ) 
+    {
+        $user = $request->user();
+        $user = User::where('user_type', 'Coach')->where('email', $email)->first();
+        return $this->sendResponse($user, '');
     }
 
     public function byUserType(Request $request, $type) {

@@ -44,5 +44,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('user/create', [UserController::class, 'create']);
     Route::put('/user/{id}', [UserController::class, 'update'])->name('edit-user');
     Route::get('/users-by-type/{type}', [UserController::class, 'byUserType'])->name('users-by-type');
+    Route::get('/user-by-email/{email}', [UserController::class, 'getUserByEmail'])->name('user-by-email');
+    Route::get('/coach-users', [UserController::class, 'get_coach'])->name('coach-users');
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('delete-user');
 });
