@@ -120,6 +120,18 @@ class UserController extends BaseController
         }
     }
 
+    public function get_athlete( Request $request ) 
+    {
+        $user = $request->user();
+        if( 'Coach' === $user->user_type ) {
+            $teamIds = Team::where('coach_id', $user->id)->pluck('id')->toArray();
+            $users = User::with('team')->whereIn('team_id', $teamIds)->where('user_type', 'Athlete')->get();
+            return $this->sendResponse($users, '');
+        } else {
+            return $this->sendError('You don\'t have permission to view coach list', ['You don\'t have permission to view coach list']);
+        }
+    }
+
     public function getUserByEmail( Request $request , $email ) 
     {
         $user = $request->user();

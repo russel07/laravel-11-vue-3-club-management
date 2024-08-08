@@ -63,6 +63,6 @@ class User extends Authenticatable
      */
     public function team()
     {
-        return $this->hasMany(BelongsTo::class);
+        return $this->belongsTo(Team::class);
     }
 }
