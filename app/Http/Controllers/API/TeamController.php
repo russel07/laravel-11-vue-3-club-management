@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
      
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Club;
 use App\Models\Team;
 use Validator;
 use Illuminate\Http\JsonResponse;
@@ -17,8 +18,23 @@ class TeamController extends BaseController
      */
     public function index(Request $request)
     {
-        $user_id = $request->user()->id;
-        $teams = Team::where('coach_id', $user_id)->with(['club', 'sport'])->get();
+        $user = $request->user();
+        $teams = collect();
+    
+        switch ($user->user_type) {
+            case 'Coach':
+                $teams = Team::where('coach_id', $user->id)->with(['club', 'sport'])->get();
+                break;
+    
+            case 'Club Admin':
+                $clubIds = Club::where('manager_id', $user->id)->pluck('id')->toArray();
+                $teams = Team::whereIn('club_id', $clubIds)->with(['club', 'sport'])->get();
+                break;
+    
+            default:
+                break;
+        }
+    
         return $this->sendResponse($teams, '');
     }
 
