@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
      
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Club;
@@ -16,7 +17,14 @@ class ClubController extends BaseController
      */
     public function index(Request $request)
     {
-        $clubs = Club::with('sports')->get();
+        $user = $request->user();
+        $user_id = $request->user()->id;
+        if( 'Admin' === $user->user_type ) {
+            $clubs = Club::with('sports')->get();
+        } else {
+            $clubIds = Club::where('manager_id', $user_id)->pluck('id')->toArray();
+            $clubs = Club::whereIn('club_id', $clubIds)->with('sports')->get();
+        }
         return $this->sendResponse($clubs, '');
     }
 
@@ -28,20 +36,37 @@ class ClubController extends BaseController
      */
     public function store(Request $request)
     { 
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->all();
+        $rules = [
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'manager_name' => 'required|string|max:255',
             'manager_email' => 'required|email',
             'sports' => 'array',
             'sports.*' => 'exists:sports,id'
-        ]);
+        ];
+
+        if ( ! isset($validatedData['manager_id']) ) {
+            $rules['password'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
      
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        $validatedData = $request->all();
+        if ( empty($validatedData['manager_id']) ) {
+            $userData = [
+                'name' => $validatedData['manager_name'],
+                'email' => $validatedData['manager_email'],
+                'password' => bcrypt($validatedData['password']),
+                'user_type' => 'Club Admin'
+            ];
+
+            $user = User::create($userData);
+            $validatedData['manager_id'] = $user->id;
+        } 
 
         $club = Club::create($validatedData);
 
@@ -74,8 +99,10 @@ class ClubController extends BaseController
 
     public function bySports (Request $request, $sport_id) 
     {
-        $clubs = Club::whereHas('sports', function ($query) use ($sport_id) {
-            $query->where('sport_id', $sport_id);
+        $user_id = $request->user()->id;
+        $clubs = Club::whereHas('sports', function ($query) use ($sport_id, $user_id) {
+            $query->where('sport_id', $sport_id)
+                ->where('manager_id', $user_id);
         })->with('sports')->get();
 
         if ($clubs->isEmpty()) {
@@ -97,8 +124,6 @@ class ClubController extends BaseController
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'manager_name' => 'required|string|max:255',
-            'manager_email' => 'required|email',
             'sports' => 'array',
             'sports.*' => 'exists:sports,id'
         ]);

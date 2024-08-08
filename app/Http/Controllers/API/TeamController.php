@@ -47,6 +47,8 @@ class TeamController extends BaseController
      */
     public function store(Request $request)
     {
+
+        $validatedData = $request->all();
         $rules = [
             'name' => 'required|string|max:255',
             'coach_name' => 'required|string|max:255',
@@ -55,7 +57,7 @@ class TeamController extends BaseController
             'sport_id' => 'required|exists:sports,id',
         ];
 
-        if ( ! isset($validatedData['coach_id']) ) {
+        if ( empty($validatedData['coach_id']) ) {
             $rules['password'] = 'required';
         }
 
@@ -65,8 +67,6 @@ class TeamController extends BaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
-
-        $validatedData = $request->all();
 
         if ( ! isset($validatedData['coach_id']) ) {
             $userData = [
@@ -100,10 +100,6 @@ class TeamController extends BaseController
             return $this->sendError('Invalid Request.', ['No team found']);   
         }
 
-        if($team->coach_id !== $user_id) {
-            return $this->sendError('You don\'t have permission to view this team', ['You don\'t have permission to view this team']);  
-        }
-
         $team->load(['club', 'sport']);
 
         return $this->sendResponse($team, '');
@@ -121,11 +117,8 @@ class TeamController extends BaseController
         $user_id = $request->user()->id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'coach_name' => 'required|string|max:255',
-            'coach_email' => 'required|string|email|max:255',
             'club_id' => 'required|exists:clubs,id',
             'sport_id' => 'required|exists:sports,id',
-            'coach_id' => 'required|exists:users,id',
         ]);
      
         if($validator->fails()){
@@ -138,10 +131,6 @@ class TeamController extends BaseController
 
         if(!$team) {
             return $this->sendError('Invalid Request.', ['No team found']);   
-        }
-
-        if($team->coach_id !== $user_id) {
-            return $this->sendError('You don\'t have permission to update this team', ['You don\'t have permission to update this team']);  
         }
 
         $validatedData = $request->all();

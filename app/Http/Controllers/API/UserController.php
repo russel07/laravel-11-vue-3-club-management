@@ -10,7 +10,6 @@ use App\Models\Team;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Http\JsonResponse;
-use Workbench\App\Models\User as ModelsUser;
 
 class UserController extends BaseController
 {
@@ -124,7 +123,7 @@ class UserController extends BaseController
     public function getUserByEmail( Request $request , $email ) 
     {
         $user = $request->user();
-        $user = User::where('user_type', 'Coach')->where('email', $email)->first();
+        $user = User::where('email', $email)->first();
         return $this->sendResponse($user, '');
     }
 

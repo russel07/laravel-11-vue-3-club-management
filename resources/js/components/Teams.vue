@@ -52,7 +52,7 @@
         <el-input v-model="form.coach_name"/>
       </el-form-item>
 
-      <el-form-item v-if="!form.coach_id" label="Password" prop="password">
+      <el-form-item v-if="!form.coach_id && !isEditing" label="Password" prop="password">
         <el-input v-model="form.password"/>
       </el-form-item>
     </el-form>
@@ -117,6 +117,9 @@ export default {
       ],
       club_id: [
         { required: true, message: 'Please select a club', trigger: 'change' }
+      ],
+      password: [
+        { required: true, message: 'Please input password', trigger: 'blur' }
       ]
     });
 

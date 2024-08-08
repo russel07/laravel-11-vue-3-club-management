@@ -60,6 +60,7 @@ export default {
           } catch (err) {
               error(err.response.data.message);
           }
+          stopLoading();
       };
 
 

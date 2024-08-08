@@ -19,6 +19,7 @@ class Club extends Model
         'location',
         'manager_name',
         'manager_email',
+        'manager_id'
     ];
 
 
