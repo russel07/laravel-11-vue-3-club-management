@@ -4,7 +4,7 @@ import Sports from "../components/Sports";
 import Clubs from "../components/Clubs";
 import Teams from "../components/Teams";
 import Login from "../components/auth/Login";
-import SuperAdmin from "../components/users/SuperAdmin";
+import Admin from "../components/users/Admin";
 import ClubAdmin from "../components/users/ClubAdmin";
 import Coach from "../components/users/Coach";
 import Athlete from "../components/users/Athlete";
@@ -50,9 +50,9 @@ const routes = [
         }
 	},
     {
-        path: '/users/super-admin',
-        name: 'SuperAdmin',
-        component: SuperAdmin,
+        path: '/users/admin',
+        name: 'Admin',
+        component: Admin,
         meta: {
             requiresAuth: true,
 			roles: ['Admin'] 
@@ -60,7 +60,7 @@ const routes = [
     },
     {
         path: '/users/club-admin',
-        name: 'SuperAdmin',
+        name: 'ClubAdmin',
         component: ClubAdmin,
         meta: {
             requiresAuth: true,

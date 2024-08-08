@@ -1,5 +1,5 @@
 <template>
-    <Header :pageTitle="'Manage Coach'" @add-new="onAddNew" @search="onSearch"/>
+    <Header :pageTitle="pageTitle" @add-new="onAddNew" @search="onSearch"/>
     <div class="users-container">
         <div class="list-card">
             <el-card class="user-item" v-for="user in filteredUsers" :key="user.id">
@@ -86,6 +86,7 @@ export default {
             email: '',
             password: ''
         });
+        const pageTitle = 'Manage '+ props.userType;
         const userType = props.userType;
         const alert = inject('alert');
         const { success, error } = alert();
@@ -94,6 +95,7 @@ export default {
         const { startLoading, stopLoading } = loader();
         const users = ref([]);
         const filteredUsers = ref([]);
+        const queryArg = ref(null);
         const isEditing = ref(false);
         const userForm = ref(null);
         const rules = reactive({
@@ -156,14 +158,20 @@ export default {
             form.user_type  = user.user_type;
             form.birth_year = user.birth_year;
             form.email      = user.email;
-            isEditing.value = false;
-            dialogFormVisible.value = false;
+            isEditing.value = true;
+            dialogFormVisible.value = true;
             getTitle();
+        };
+
+        const filterUsers = () => {
+            filteredUsers.value = users.value.filter(user =>
+            !queryArg.value || user.name.toLowerCase().includes(queryArg.value.toLowerCase())
+            );
         };
 
         const onSearch = (q) => {
             queryArg.value = q;
-            filterClubs();
+            filterUsers();
         }
         
         const getTitle = () => {
@@ -175,15 +183,28 @@ export default {
             userForm.value.validate(async (valid) => {
             if (valid) {
                 try {
-                    startLoading('Creating account...');
-                    const response = await http.post('user/create', form);
-                    stopLoading();
-
-                    if( response.data.success ) {
-                        users.value.push(response.data.data);
-                        success(response.data.message);
+                    if (isEditing.value) {
+                        startLoading('Updating ...');
+                        const response = await http.put(`user/${form.id}`, form);
+                        stopLoading();
+                        if(response.data.success) {
+                            fetchUsers();
+                            success(response.data.message);
+                        } else {
+                            error(response.data.message);
+                        }
+                        isEditing.value = false;
                     } else {
-                        error(response.data.message);
+                        startLoading('Creating ...');
+                        const response = await http.post('user/create', form);
+                        stopLoading();
+
+                        if( response.data.success ) {
+                            users.value.push(response.data.data);
+                            success(response.data.message);
+                        } else {
+                            error(response.data.message);
+                        }
                     }
                 } catch (err) {
                     error(err.response.data.message);
@@ -193,11 +214,28 @@ export default {
             });
         };
 
+        const deleteUser = async (id) => {
+            try {
+                startLoading('Deleting...');
+                const response = await http.delete(`user/${id}`);
+                stopLoading();
+                if(response.data.success) {
+                    success(response.data.message);
+                    fetchUsers();
+                } else {
+                    error(response.data.message);
+                }
+            } catch (err) {
+            error(err.response.data.message);
+            }
+        };
+
         onMounted(() => {
             fetchUsers();
         });
 
         return {
+            pageTitle,
             filteredUsers,
             onAddNew,
             onSearch,
@@ -209,7 +247,8 @@ export default {
             isEditing,
             resetForm,
             editUser,
-            onSubmit
+            onSubmit,
+            deleteUser
         }
     }
 }

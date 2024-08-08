@@ -42,5 +42,7 @@ Route::middleware('auth:api')->group(function () {
 
     //User EndPoints
     Route::post('user/create', [UserController::class, 'create']);
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('edit-user');
     Route::get('/users-by-type/{type}', [UserController::class, 'byUserType'])->name('users-by-type');
+    Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('delete-user');
 });

@@ -15,14 +15,13 @@
         <template v-if="'Admin' === userType">
           <el-sub-menu index="1">
             <template #title>User</template>
-            <el-menu-item index="/users/super-admin">Super Admin</el-menu-item>
+            <el-menu-item index="/users/admin">Super Admin</el-menu-item>
             <el-menu-item index="/users/club-admin">Club Admin</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="2">
             <template #title>Manage</template>
             <el-menu-item index="/sports">Sports</el-menu-item>
             <el-menu-item index="/clubs">Clubs</el-menu-item>
-            <el-menu-item index="/teams">Teams</el-menu-item>
           </el-sub-menu>
         </template>
 

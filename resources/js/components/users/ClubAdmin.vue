@@ -1,21 +1,15 @@
 <template>
   <div class="wrapper">
-    <h1>Club Admin</h1>
+    <ManageUser :userType="'Club Admin'"/>
   </div>
 </template>
 
 <script>
-  import { ref } from 'vue';
+  import ManageUser from './ManageUser.vue';
   export default {
     name: 'ClubAdmin',
     components: {
+      ManageUser
     },
-
-    setup(){
-
-      return {
-
-      }
-    }
   }
 </script>

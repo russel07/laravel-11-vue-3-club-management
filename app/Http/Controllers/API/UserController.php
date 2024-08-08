@@ -97,7 +97,11 @@ class UserController extends BaseController
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
 
-        $user->load('teams');
+        if( 'Coach' === $user->user_type ) {
+            $user->load('teams');
+        }else if( 'Athlete' === $user->user_type ) {
+            $user->load('team');
+        }
         
         return $this->sendResponse($user, $input['user_type'].' register successfully.');
     }
@@ -118,6 +122,73 @@ class UserController extends BaseController
         }
     
         return $this->sendResponse($users, '');
+    }
+
+        /**
+     * Update User api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        if(!$user) {
+            return $this->sendError('Invalid Request.', ['No user found']);   
+        }
+
+        $input = $request->all();
+
+        $fields = [
+            'name'      => 'required',
+            'gender'    => 'required',
+            'email'     => 'required|email',
+        ];
+
+        if ( isset($input['user_type']) && 'Athlete' === $input['user_type']) {
+            $fields['team_id'] = 'required';
+            $fields['birth_year'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $fields);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+        unset($input['password']);
+
+        $user->update($input);
+
+        if( 'Coach' === $user->user_type ) {
+            $user->load('teams');
+        }else if( 'Athlete' === $user->user_type ) {
+            $user->load('team');
+        }
+        
+        return $this->sendResponse($user, $input['user_type'].' updated successfully.');
+    }
+
+    /**
+     * Remove the specified user from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy( Request $request, $id )
+    {
+        $user_id = $request->user()->id;
+        $user = User::findOrFail($id);
+        $user_type = $user->user_type;
+
+        if( ! $user ) {
+            return $this->sendError('Invalid Request.', ['No user found']);   
+        }
+
+        if($user->delete()) {
+            return $this->sendResponse([], $user_type.' deleted successfully.');
+        } else {
+            return $this->sendError('Delete Error.', ['Something went wrong try again later']);   
+        }
     }
     
 
