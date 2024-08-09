@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SportController;
 use App\Http\Controllers\API\ClubController;
 use App\Http\Controllers\API\TeamController;
+use App\Http\Controllers\TestController;
  
   
 Route::post('user/register', [UserController::class, 'register']);
@@ -48,4 +49,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/coach-users', [UserController::class, 'get_coach'])->name('coach-users');
     Route::get('/athlete-users', [UserController::class, 'get_athlete'])->name('athlete-users');
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('delete-user');
+    
+    //Test EndPoints
+    Route::get('athlete-tests/{athleteId}', [TestController::class, 'get_test'])->name('users-by-type');
+    Route::post('test-results/', [TestController::class, 'insert_result'])->name('store-test-result');
+    Route::put('test-results/{id}', [TestController::class, 'update_result'])->name('update-test-result');
 });

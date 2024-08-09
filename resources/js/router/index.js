@@ -9,6 +9,7 @@ import ClubAdmin from "../components/users/ClubAdmin";
 import Coach from "../components/users/Coach";
 import Athlete from "../components/users/Athlete";
 import AthleteRegister from "../components/auth/AthleteRegister";
+import Test from "../components/test/Test"
 import ForgotPassword from "../components/auth/ForgotPassword";
 import Logout from "../components/auth/Logout";
 
@@ -83,6 +84,15 @@ const routes = [
         meta: {
             requiresAuth: true,
 			roles: ['Coach'] 
+        }
+    },
+    {
+        path: '/test/:athleteId',
+        name: 'Test',
+        component: Test,
+        meta: {
+            requiresAuth: true,
+            roles: ['Coach', 'Athlete'] 
         }
     },
     {
