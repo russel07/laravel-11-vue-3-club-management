@@ -6,9 +6,14 @@
             <template #header>Test {{ index+1 }}</template>
             <p><strong>Test Date:</strong> {{ test.test_date }} </p>
             <p><strong>Last Update:</strong> {{ test.updated_at }} </p>
+            <p><strong>Test Status:</strong>
+                <el-tag v-if="getStatus(test)" type="success">Complete</el-tag>
+                <el-tag v-else type="warning">Incomplete</el-tag>
+            </p>
             <template #footer>
-                <el-button size="small" @click="editTestResult(test)">Edit</el-button>
-                <el-button size="small" @click="viewGraph(test.id)">View Graph</el-button>
+                <el-button type="primary" size="small" @click="editTestResult(test)" round>Edit</el-button>
+                <el-button type="success" size="small" @click="viewResult(test)" round>Result</el-button>
+                <el-button type="info" :disabled="!getStatus(test)" size="small" @click="viewGraph(test.id)" round>Chart</el-button>
                 <el-popconfirm
                     confirm-button-text="Yes"
                     cancel-button-text="No"
@@ -17,7 +22,7 @@
                     @confirm="deleteAthlete(athlete.id)"
                 >
                     <template #reference>
-                    <el-button type="danger" size="small">Delete</el-button>
+                    <el-button type="danger" size="small" round>Delete</el-button>
                     </template>
                 </el-popconfirm>
             </template>
@@ -54,6 +59,11 @@
         </div>
         </template>
     </el-dialog>
+
+    <el-dialog v-model="resultDialog" class="form-modal" title="Test Results" width="500">
+        <p v-for="(label, key) in test_label"><strong>{{ label }}:</strong>
+            <el-tag v-if="test_results[key]" type="primary">{{ test_results[key] }}</el-tag> </p>
+    </el-dialog>
   </template>
   
   <script>
@@ -82,6 +92,8 @@
         const dialogTitle = ref('');
         const isEditing = ref(false);
         const selectedTest = ref(null);
+        const resultDialog = ref(false);
+        const test_results = ref([]);
 
         const test_label = {
             'test_2': "Yläraajojen kestovoima (Leuanveto)",
@@ -133,6 +145,26 @@
         const filterTest = () => {
             filteredTests.value = tests.value.filter(test => !queryArg.value || test.name.toLowerCase().includes(queryArg.value.toLowerCase()));
         };
+
+        const getStatus = (test) => {
+            let complete = false;
+            if(test.test_results.length) {
+                let testResultsObject = JSON.parse(test.test_results);
+                let has_empty = false;
+
+                Object.keys(form.test_results).forEach((key) => { 
+                    if ( !testResultsObject[key] ) {
+                        has_empty = true;
+                    }
+                });
+
+                if( ! has_empty ) {
+                    complete =  true;
+                }
+            }
+            
+            return complete;
+        }
   
       const onSearch = (q) => {
         queryArg.value = q;
@@ -147,17 +179,39 @@
         const editTestResult = (test) => {
             form.id = test.id;
             form.test_date = test.test_date;
-            let testResultsObject = JSON.parse(test.test_results);console.log(testResultsObject['test_1']);
-            Object.keys(form.test_results).forEach((key) => { 
-                if (testResultsObject[key] !== undefined) {
-                    form.test_results[key] = testResultsObject[key];
-                }
-            });
-            console.log(form.test_results);
+
+            if(test.test_results.length) {
+                let testResultsObject = JSON.parse(test.test_results);
+                Object.keys(form.test_results).forEach((key) => { 
+                    if (testResultsObject[key] !== undefined) {
+                        form.test_results[key] = testResultsObject[key];
+                    }
+                });
+            }
+           
             isEditing.value = true;
             getTitle();
             dialogFormVisible.value = true;
         };
+
+        const viewResult = (test) => {
+            if(test.test_results.length) {
+                test_results.value = JSON.parse(test.test_results);
+                Object.keys(test_label).forEach((key) => {
+                    if ( ! test_results.value[key] ) {
+                        test_results.value[key] = null;
+                    }
+                });
+            } else {
+                Object.keys(test_label).forEach((key) => {
+                    if ( ! test_results.value[key] ) {
+                        test_results.value[key] = null;
+                    }
+                });
+            }
+            resultDialog.value =  true;
+        };
+
 
         const onSubmit = async () => {
             if (isEditing.value) {
@@ -165,28 +219,45 @@
                 const response = await http.put(`test-results/${form.id}`, form);
                 stopLoading();
                 if(response.data.success) {
-                    
+                    fetchTests();
                     success(response.data.message);
                 } else {
                     error(response.data.message);
                 }
                 isEditing.value = false;
             } else {
-                startLoading('Storing club...');
+                startLoading('Storing result...');
                 const response = await http.post('test-results', form);
                 stopLoading();
                 
                 if(response.data.success) {
+                    fetchTests();
                     success(response.data.message);
                 } else {
                     error(response.data.message);
                 }
+                fetchTests();
             }
+            resetForm();
         };
 
     const onAddNew = () => {
         getTitle();
         dialogFormVisible.value = true;
+    }
+
+    const resetForm = () => { console.log("rest fomr");
+        form.id = null;
+        form.user_id = route.params.athleteId;
+        form.test_date = new Date().toISOString().split('T')[0];
+
+        Object.keys(form.test_results).forEach((key) => { 
+            form.test_results[key] = '';
+        });
+        
+        isEditing.value = false;
+        getTitle();
+        dialogFormVisible.value = false;
     }
   
       onMounted(() => {
@@ -204,7 +275,12 @@
         test_label,
         selectedTest,
         onSubmit,
-        editTestResult
+        editTestResult,
+        getStatus,
+        resetForm,
+        resultDialog,
+        viewResult,
+        test_results
       }
     }
   }
