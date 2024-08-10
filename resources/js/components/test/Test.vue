@@ -13,7 +13,7 @@
             <template #footer>
                 <el-button type="primary" size="small" @click="editTestResult(test)" round>Edit</el-button>
                 <el-button type="success" size="small" @click="viewResult(test)" round>Result</el-button>
-                <el-button type="info" :disabled="!getStatus(test)" size="small" @click="viewGraph(test.id)" round>Chart</el-button>
+                <el-button type="info" :disabled="!getStatus(test)" size="small" @click="viewGraph(test)" round>Chart</el-button>
                 <el-popconfirm
                     confirm-button-text="Yes"
                     cancel-button-text="No"
@@ -64,19 +64,25 @@
         <p v-for="(label, key) in test_label"><strong>{{ label }}:</strong>
             <el-tag v-if="test_results[key]" type="primary">{{ test_results[key] }}</el-tag> </p>
     </el-dialog>
+
+    <el-dialog v-model="chartDialog" class="form-modal" title="Radar Chart">
+        <Chart/>
+    </el-dialog>
   </template>
   
   <script>
   import { inject, ref, reactive, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';  // Correct import
+  import { useRoute } from 'vue-router'; 
   import Header from "../Header";
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
-  
+  import Chart from './Chart.vue';
+
   export default {
     name: 'Test',
     components: {
       Header,
+      Chart,
     },
   
     setup() {
@@ -94,6 +100,9 @@
         const selectedTest = ref(null);
         const resultDialog = ref(false);
         const test_results = ref([]);
+        const chartDialog = ref(false);
+        const radarChart = ref(null);
+        const chartInstance = ref(null);
 
         const test_label = {
             'test_2': "Yläraajojen kestovoima (Leuanveto)",
@@ -212,6 +221,9 @@
             resultDialog.value =  true;
         };
 
+        const viewGraph = (test) => {
+            chartDialog.value =true;
+        }
 
         const onSubmit = async () => {
             if (isEditing.value) {
@@ -259,7 +271,7 @@
         getTitle();
         dialogFormVisible.value = false;
     }
-  
+
       onMounted(() => {
         fetchTests();
       });
@@ -280,7 +292,9 @@
         resetForm,
         resultDialog,
         viewResult,
-        test_results
+        test_results,
+        viewGraph,
+        chartDialog
       }
     }
   }

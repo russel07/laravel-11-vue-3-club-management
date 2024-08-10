@@ -1,3 +1,10 @@
 #body {
     width: 100%;
 }
+
+.el-header{
+    padding: 0 !important;
+}
+.el-menu--horizontal{
+    background-color: #f2f3f7!important;
+}
