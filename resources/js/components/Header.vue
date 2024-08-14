@@ -49,7 +49,7 @@
     </div>
     <div class="actions">
       <el-button v-if="addButton" type="primary" @click="addNew">{{ addButton }}</el-button>
-      <el-input v-model="searchQuery" placeholder="Search..." class="search-input" @keyup="onSearch">
+      <el-input  v-if="show_search" v-model="searchQuery" placeholder="Search..." class="search-input" @keyup="onSearch">
         <template #append>
         <el-button :icon="Search" @click="onSearch" />
       </template>
@@ -64,7 +64,7 @@ import { useRouter } from 'vue-router';
 import { Search } from '@element-plus/icons-vue'
 export default {
   name: 'Header',
-  props: ['pageTitle', 'addButton'],
+  props: ['pageTitle', 'addButton', 'show_search'],
   emits: ['add-new', 'search'],
   setup(props, { emit }){
     const activeIndex = ref('/');

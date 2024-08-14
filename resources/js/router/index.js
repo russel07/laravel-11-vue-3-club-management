@@ -9,8 +9,10 @@ import ClubAdmin from "../components/users/ClubAdmin";
 import Coach from "../components/users/Coach";
 import Athlete from "../components/users/Athlete";
 import AthleteRegister from "../components/auth/AthleteRegister";
-import Test from "../components/test/Test"
+import Test from "../components/test/Test";
+import Chart from "../components/test/Chart";
 import ForgotPassword from "../components/auth/ForgotPassword";
+import ChangePassword from "../components/users/ChangePassword";
 import Logout from "../components/auth/Logout";
 
 const routes = [
@@ -87,12 +89,29 @@ const routes = [
         }
     },
     {
+        path: '/graph/:athleteId',
+        name: 'Graph',
+        component: Chart,
+        meta: {
+            requiresAuth: true,
+            roles: ['Coach', 'Athlete'] 
+        }
+    },
+    {
         path: '/test/:athleteId',
         name: 'Test',
         component: Test,
         meta: {
             requiresAuth: true,
             roles: ['Coach', 'Athlete'] 
+        }
+    },
+    {
+        path: '/change-password',
+        name: 'ChangePassword',
+        component: ChangePassword,
+        meta: {
+            requiresAuth: true
         }
     },
     {

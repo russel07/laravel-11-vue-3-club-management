@@ -49,7 +49,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/coach-users', [UserController::class, 'get_coach'])->name('coach-users');
     Route::get('/athlete-users', [UserController::class, 'get_athlete'])->name('athlete-users');
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('delete-user');
-    
+    Route::post('/change-password', [UserController::class, 'changePassword'])->name('change-password');
+
     //Test EndPoints
     Route::get('athlete-tests/{athleteId}', [TestController::class, 'get_test'])->name('users-by-type');
     Route::post('test-results/', [TestController::class, 'insert_result'])->name('store-test-result');

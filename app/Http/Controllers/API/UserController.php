@@ -1,7 +1,7 @@
 <?php
      
 namespace App\Http\Controllers\API;
-     
+use Illuminate\Support\Facades\Hash;     
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
@@ -209,7 +209,6 @@ class UserController extends BaseController
      */
     public function destroy( Request $request, $id )
     {
-        $user_id = $request->user()->id;
         $user = User::findOrFail($id);
         $user_type = $user->user_type;
 
@@ -222,6 +221,36 @@ class UserController extends BaseController
         } else {
             return $this->sendError('Delete Error.', ['Something went wrong try again later']);   
         }
+    }
+
+    public function changePassword(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required',
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+        // Get the authenticated user from the request
+        $user = $request->user();
+
+        // Check if the current password is correct
+        if (!Hash::check($request->current_password, $user->password)) {
+            return $this->sendError('Current password is incorrect', ['Current password is incorrect']);
+        }
+
+        // Update the user's password
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        // Optionally, revoke the user's current token(s)
+        //$request->user()->tokens()->delete();
+
+        // Return a success response
+        return $this->sendResponse($user, 'Password successfully changed');
     }
     
 

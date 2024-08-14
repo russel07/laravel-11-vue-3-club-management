@@ -72,7 +72,7 @@
   
   <script>
   import { inject, ref, reactive, onMounted } from 'vue';
-  import { useRoute } from 'vue-router'; 
+  import { useRoute, useRouter } from 'vue-router'; 
   import Header from "../Header";
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
@@ -90,6 +90,7 @@
         const alert = inject('alert');
         const { success, error } = alert();
         const route = useRoute(); 
+        const router = useRouter();
         const tests = ref([]);
         const filteredTests = ref([]);
         const queryArg = ref(null);
@@ -222,7 +223,8 @@
         };
 
         const viewGraph = (test) => {
-            chartDialog.value =true;
+            chartDialog.value = true;
+            //router.push('/graph/'+route.params.athleteId);
         }
 
         const onSubmit = async () => {
