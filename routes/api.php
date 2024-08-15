@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
 
     //User EndPoints
     Route::post('user/create', [UserController::class, 'create']);
+    Route::get('/user/{id}', [UserController::class, 'show'])->name('get-user');
     Route::put('/user/{id}', [UserController::class, 'update'])->name('edit-user');
     Route::get('/users-by-type/{type}', [UserController::class, 'byUserType'])->name('users-by-type');
     Route::get('/user-by-email/{email}', [UserController::class, 'getUserByEmail'])->name('user-by-email');
@@ -52,7 +53,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/change-password', [UserController::class, 'changePassword'])->name('change-password');
 
     //Test EndPoints
-    Route::get('athlete-tests/{athleteId}', [TestController::class, 'get_test'])->name('users-by-type');
+    Route::get('athlete-tests/{athleteId}', [TestController::class, 'get_test'])->name('get-tests');
+    Route::get('test/{testId}', [TestController::class, 'show'])->name('get-test');
     Route::post('test-results/', [TestController::class, 'insert_result'])->name('store-test-result');
     Route::put('test-results/{id}', [TestController::class, 'update_result'])->name('update-test-result');
 });

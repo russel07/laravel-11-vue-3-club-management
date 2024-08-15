@@ -89,7 +89,7 @@ const routes = [
         }
     },
     {
-        path: '/graph/:athleteId',
+        path: '/graph/:testId',
         name: 'Graph',
         component: Chart,
         meta: {

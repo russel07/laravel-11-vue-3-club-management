@@ -4,8 +4,8 @@
       <div class="list-card">
         <el-card class="test-item" v-for="(test, index) in filteredTests" :key="test.id">
             <template #header>Test {{ index+1 }}</template>
-            <p><strong>Test Date:</strong> {{ test.test_date }} </p>
-            <p><strong>Last Update:</strong> {{ test.updated_at }} </p>
+            <p><strong>Test Date:</strong> {{ formatDate(test.test_date) }} </p>
+            <p><strong>Last Update:</strong> {{ formatDate(test.updated_at) }} </p>
             <p><strong>Test Status:</strong>
                 <el-tag v-if="getStatus(test)" type="success">Complete</el-tag>
                 <el-tag v-else type="warning">Incomplete</el-tag>
@@ -29,7 +29,7 @@
         </el-card>
       </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" width="500">
+    <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle">
         <el-form :model="form" label-width="180px" style="max-width: 450px;">
             <el-form-item label="Test Date" prop="test_date" label-position="top">
                 <el-date-picker v-model="form.test_date" type="date" placeholder="Select date"></el-date-picker>
@@ -60,50 +60,40 @@
         </template>
     </el-dialog>
 
-    <el-dialog v-model="resultDialog" class="form-modal" title="Test Results" width="500">
+    <el-dialog v-model="resultDialog" class="form-modal" title="Test Results">
         <p v-for="(label, key) in test_label"><strong>{{ label }}:</strong>
             <el-tag v-if="test_results[key]" type="primary">{{ test_results[key] }}</el-tag> </p>
     </el-dialog>
+</template>
 
-    <el-dialog v-model="chartDialog" class="form-modal" title="Radar Chart">
-        <Chart/>
-    </el-dialog>
-  </template>
-  
-  <script>
+<script>
   import { inject, ref, reactive, onMounted } from 'vue';
-  import { useRoute, useRouter } from 'vue-router'; 
+  import { useRoute } from 'vue-router'; 
   import Header from "../Header";
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
-  import Chart from './Chart.vue';
 
   export default {
     name: 'Test',
     components: {
       Header,
-      Chart,
     },
   
     setup() {
         const { startLoading, stopLoading } = loader();
-        const alert = inject('alert');
-        const { success, error } = alert();
-        const route = useRoute(); 
-        const router = useRouter();
-        const tests = ref([]);
-        const filteredTests = ref([]);
-        const queryArg = ref(null);
-        const athleteId = route.params.athleteId;
-        const dialogFormVisible = ref(false);
-        const dialogTitle = ref('');
-        const isEditing = ref(false);
-        const selectedTest = ref(null);
-        const resultDialog = ref(false);
-        const test_results = ref([]);
-        const chartDialog = ref(false);
-        const radarChart = ref(null);
-        const chartInstance = ref(null);
+        const alert                         = inject('alert');
+        const { success, error }            = alert();
+        const route                         = useRoute(); 
+        const tests                         = ref([]);
+        const filteredTests                 = ref([]);
+        const queryArg                      = ref(null);
+        const athleteId                     = ref(null);
+        const dialogFormVisible             = ref(false);
+        const dialogTitle                   = ref('');
+        const isEditing                     = ref(false);
+        const selectedTest                  = ref(null);
+        const resultDialog                  = ref(false);
+        const test_results                  = ref([]);
 
         const test_label = {
             'test_2': "Yläraajojen kestovoima (Leuanveto)",
@@ -122,7 +112,7 @@
 
         const form = reactive({
             id: null,
-            user_id: route.params.athleteId,
+            user_id: athleteId,
             test_date: new Date().toISOString().split('T')[0],
             test_results:{
                 'test_1': '',
@@ -139,11 +129,20 @@
                 'test_12': '',
             },
         });
+
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+            const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+            const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+            return `${formattedDate} at ${formattedTime}`;
+        }
   
         const fetchTests = async () => {
             startLoading('Fetching tests...');
             try {
-                const response = await http.get(`athlete-tests/${athleteId}`);
+                const response = await http.get(`athlete-tests/${athleteId.value}`);
                 tests.value = response.data.data;
                 filteredTests.value = response.data.data;
             } catch (err) {
@@ -176,12 +175,12 @@
             return complete;
         }
   
-      const onSearch = (q) => {
-        queryArg.value = q;
-        filterTest();
-      }
+        const onSearch = (q) => {
+            queryArg.value = q;
+            filterTest();
+        }
 
-      const getTitle = () => {
+        const getTitle = () => {
             dialogTitle.value = isEditing.value ? 'Update ' : 'Insert ';
             dialogTitle.value += ' Test Result';
         }
@@ -223,8 +222,9 @@
         };
 
         const viewGraph = (test) => {
-            chartDialog.value = true;
-            //router.push('/graph/'+route.params.athleteId);
+            const path = `#/graph/${test.id}`;
+            const fullPath = `${window.location.origin}${path}`;
+            window.open(fullPath, '_blank');
         }
 
         const onSubmit = async () => {
@@ -255,26 +255,32 @@
             resetForm();
         };
 
-    const onAddNew = () => {
-        getTitle();
-        dialogFormVisible.value = true;
-    }
+        const onAddNew = () => {
+            getTitle();
+            dialogFormVisible.value = true;
+        }
 
-    const resetForm = () => { console.log("rest fomr");
-        form.id = null;
-        form.user_id = route.params.athleteId;
-        form.test_date = new Date().toISOString().split('T')[0];
+        const resetForm = () => {
+            form.id = null;
+            form.user_id = athleteId.value;
+            form.test_date = new Date().toISOString().split('T')[0];
 
-        Object.keys(form.test_results).forEach((key) => { 
-            form.test_results[key] = '';
-        });
-        
-        isEditing.value = false;
-        getTitle();
-        dialogFormVisible.value = false;
-    }
+            Object.keys(form.test_results).forEach((key) => { 
+                form.test_results[key] = '';
+            });
+
+            isEditing.value = false;
+            getTitle();
+            dialogFormVisible.value = false;
+        }
 
       onMounted(() => {
+        let user = JSON.parse(localStorage.getItem('_GymAppLoggedInUser'));
+        if( !route.params.athleteId && 'Athlete' === user.user_type) {
+            athleteId.value = user.id;
+        } else {
+            athleteId.value = route.params.athleteId ? route.params.athleteId : '';
+        }
         fetchTests();
       });
   
@@ -296,27 +302,8 @@
         viewResult,
         test_results,
         viewGraph,
-        chartDialog
+        formatDate
       }
     }
   }
   </script>
-  <style scoped>
-  .tests-container {
-    margin: 2% 4%;
-  }
-  
-  .list-card {
-    display: flex;
-    gap: 2%; 
-    flex-wrap: wrap;
-    justify-content: flex-start; 
-  }
-  
-  .test-item {
-    width: 23%;
-    text-align: left;
-    margin-top: 3%;
-  }
-
-  </style>

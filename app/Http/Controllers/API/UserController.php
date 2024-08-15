@@ -107,6 +107,12 @@ class UserController extends BaseController
         return $this->sendResponse($user, $input['user_type'].' register successfully.');
     }
 
+    public function show(Request $request, $id): JsonResponse
+    {
+       $user = User::find($id); 
+       return $this->sendResponse($user, '');
+    }
+
     public function get_coach( Request $request ) 
     {
         $user = $request->user();

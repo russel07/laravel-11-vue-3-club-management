@@ -18,6 +18,12 @@ class TestController extends BaseController
         return $this->sendResponse($tests, '');
     }
 
+    public function show(Request $request, $id) {
+        $test = Test::with('user')->find($id);
+
+        return $this->sendResponse($test, '');
+    }
+
     public function insert_result( Request $request ) {
         $rules = [
             'user_id' => 'required|exists:users,id',

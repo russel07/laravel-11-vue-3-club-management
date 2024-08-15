@@ -1,12 +1,20 @@
 <template>
-  <div>
+  <Header :pageTitle="'Test Chart'"/>
+  <div class="chart-wrapper">
+    <div class="test-info">
+      <p><strong>Test Date:</strong> {{ formatDate(testInfo.test_date) }} </p>
+    </div>
     <canvas ref="radarChart"></canvas>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+  import { inject, ref, reactive, onMounted } from 'vue';
+  import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+  import { useRoute } from 'vue-router'; 
+  import Header from "../Header";
+  import http from "../../http/http-common";
+  import { loader } from '../../composables/Loader';
 
 // Register the Chart.js components globally
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -57,41 +65,169 @@ const rotatedBackgroundPlugin = {
       };
 
 export default {
+  name: 'Chart',
+  components: {
+    Header,
+  },
   setup() {
+    const { startLoading, stopLoading } = loader();
+    const alert                         = inject('alert');
+    const route                         = useRoute(); 
+    const { success, error }            = alert();
+    const testInfo                      = ref([]);
+    const testId                        = ref(route.params.testId ? route.params.testId : '');
+    const gender                        = ref('');
+    const app_ready                     = ref(false);
     const radarChart = ref(null);
     const chartInstance = ref(null);
+    const test_labels = [
+      "Ylävartalon kestovoima (Etunojapunnerrus)",
+      "Yläraajojen kestovoima (Leuanveto)",
+      "Yläraajojen vetävä voima ja tukilihasten staattinen kesto (Kulmaveto)",
+      "Keski- ja ylävartalon voima (Jalkojen nosto riipunnasta)",
+      "Alaraajojen voima/hallinta (Yhden jalan kyykky)",
+      "Alaraajojen Räjähtävyys (Vauhditon Pituus)",
+      "Nilkan liikkuvuus ja puolierot (Nilkan liikkuvuustesti)",
+      "Alaraajan lihaksiston liikkuvuus (Aktiivinen suoran jalan nosto selin)",
+      "Alaraajojen ojennusliikkuvuus (Reisi, Sääri, Jalkalinja - Thomas1,2&3)",
+      "Vartalonkierto (Lying Trunk Rotation)",
+      "Liikkuvuus (Valakyykky Kepillä)",
+      "Hartiarenkaan liikkuvuus (Olkanivel, Lapa, solisluu, Rintakehä)"
+  ];
+
+    const min_max = {
+      'test_1': {
+        'Male' : {
+          'min': 0,
+          'max': 42
+        },
+        'Female' : {
+          'min': 0,
+          'max': 33
+        }
+      },
+      'test_2': {
+        'Male' : {
+          'min': 1,
+          'max': 17
+        },
+        'Female' : {
+          'min': 0,
+          'max': 19
+        }
+      },
+      'test_3': {
+        'Male' : {
+          'min': 3,
+          'max': 26
+        },
+        'Female' : {
+          'min': 3,
+          'max': 19
+        }
+      },
+      'test_4': {
+        'Male' : {
+          'min': 5,
+          'max': 21
+        },
+        'Female' : {
+          'min': 2,
+          'max': 17
+        }
+      },
+      'test_6': {
+        'Male' : {
+          'min': 188,
+          'max': 264
+        },
+        'Female' : {
+          'min': 169,
+          'max': 231
+        }
+      }
+    }
 
     const chartData = {
-            labels: ['Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5', 'Test 6', 'Test 7', 'Test 8', 'Test 9', 'Test 10', 'Test 11', 'Test 12'],
-            datasets: [
-                {
-                    label: 'Dataset 1',
-                    data: [5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10],
-                    backgroundColor: 'rgba(0, 123, 255, 0.3)', // Light blue fill for visibility
-                    borderColor: 'rgba(0, 123, 255, 1)', // Blue border
-                    borderWidth: 2,
-                    fill: true // Ensure the dataset is filled
-                }
-            ]
-        };
+      labels: test_labels,
+      datasets: []
+    };
 
     const chartOptions = {
       scales: {
-                    r: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 10,
-                        ticks: {
-                            stepSize: 1,
-                            display: true
-                        }
-                    }
-                }
+        r: {
+            beginAtZero: true,
+            suggestedMin: 0,
+            suggestedMax: 10,
+            ticks: {
+              stepSize: 1,
+              display: true
+            }
+        }
+      }
     };
 
-    onMounted(() => {
+    const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+            const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+            const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+            return `${formattedDate} at ${formattedTime}`;
+        }
 
-      if (radarChart.value) {
+    const fetchTests = async () => {
+      startLoading('Fetching tests...');
+      try {
+          const response = await http.get(`test/${testId.value}`);
+          testInfo.value = response.data.data;
+          gender.value = response.data.data.user.gender;
+          prepareData();
+      } catch (err) {
+          //error(err.response.data.message);
+      }
+      stopLoading();
+    }
+
+    const linearTransform = (value, min, max, newMin = 4, newMax = 10) => {
+      // Ensure the source range is valid
+      if (min === max) {
+        return 0;
+      }
+
+      // Calculate the transformed value
+      const transformedValue = newMin + ((value - min) / (max - min)) * (newMax - newMin);
+
+      // Return the value rounded to one decimal place
+      return parseFloat(transformedValue.toFixed(1));
+    }
+
+    const prepareData = () => {
+      let test_results = JSON.parse(testInfo.value.test_results);
+      let data_set = [];
+      Object.keys(test_results).forEach((key) => {
+        if (['test_1', 'test_2', 'test_3', 'test_4', 'test_6'].includes(key)) {
+          let min = min_max[key][gender.value].min;
+          let max = min_max[key][gender.value].max;
+          let val = linearTransform(test_results[key], min, max);
+          data_set.push(val);
+        } else {
+          data_set.push(test_results[key]);
+        }
+      });
+
+      const dataset = {
+          label: testInfo.value.user.name,
+          data: data_set,
+          backgroundColor: 'rgba(0, 123, 255, 0.3)',
+          borderColor: 'rgba(0, 123, 255, 1)',
+          borderWidth: 2,
+          fill: true
+        }
+        chartData.datasets.push(dataset);
+      app_ready.value = true;
+
+      if (app_ready.value && radarChart.value) {
         // Register the plugin before creating the chart
         Chart.register(rotatedBackgroundPlugin);
 
@@ -103,18 +239,30 @@ export default {
           plugins: [rotatedBackgroundPlugin]
         });
       }
+    }
+
+    onMounted(() => { console.log("here");
+      if(testId.value){
+        fetchTests();
+      }
     });
 
     return {
-      radarChart
+      radarChart,
+      testInfo,
+      formatDate
     };
   }
 };
 </script>
 
 <style>
+.chart-wrapper{
+  display: flex;
+  justify-content: center;
+}
 canvas {
-  max-width: 600px;
-  max-height: 600px;
+  max-width: 800px;
+  max-height: 800px;
 }
 </style>
