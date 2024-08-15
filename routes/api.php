@@ -8,11 +8,14 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SportController;
 use App\Http\Controllers\API\ClubController;
 use App\Http\Controllers\API\TeamController;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\ForgotPasswordController;
  
   
 Route::post('user/register', [UserController::class, 'register']);
 Route::post('login', [RegisterController::class, 'login']);
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('password/reset', [ForgotPasswordController::class, 'reset']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();

@@ -103,25 +103,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.users-container {
-margin: 2% 4%;
-}
-
-.list-card {
-display: flex;
-gap: 2%; 
-flex-wrap: wrap;
-justify-content: flex-start; 
-}
-
-.user-item {
-width: 23%;
-text-align: left;
-margin-top: 3%;
-}
-
-.el-tag{
-margin: 0 5px;
-}
-</style>

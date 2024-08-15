@@ -340,25 +340,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.teams-container {
-  margin: 2% 4%;
-}
-
-.list-card {
-  display: flex;
-  gap: 2%;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.team-item {
-  width: 23%;
-  text-align: left;
-}
-
-.el-tag {
-  margin: 0 5px;
-}
-</style>

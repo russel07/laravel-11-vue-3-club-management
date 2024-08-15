@@ -95,25 +95,3 @@
     }
   }
 </script>
-<style scoped>
-.athletes-container {
-  margin: 2% 4%;
-}
-
-.list-card {
-  display: flex;
-  gap: 2%; 
-  flex-wrap: wrap;
-  justify-content: flex-start; 
-}
-
-.athlete-item {
-  width: 23%;
-  text-align: left;
-  margin-top: 3%;
-}
-
-.el-tag{
-  margin: 0 5px;
-}
-</style>

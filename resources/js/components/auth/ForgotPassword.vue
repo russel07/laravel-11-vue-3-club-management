@@ -5,7 +5,7 @@
         <img class="logo" src="../../../images/logo.png"/>
 
         <el-card style="max-width: 480px; margin-top: 20px;">
-          <el-form :model="form" :rules="rules" ref="loginForm" label-width="auto" label-position="top" style="max-width: 600px">
+          <el-form :model="form" :rules="rules" ref="resetForm" label-width="auto" label-position="top" style="max-width: 600px">
             <el-form-item label="Email" prop="email">
               <el-input v-model="form.email" />
             </el-form-item>
@@ -31,12 +31,18 @@
 </template>
 
 <script>
-  import { reactive, ref } from 'vue';
-  import axios from 'axios';
+import { inject, reactive, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import http from "../../http/http-common";
+import { loader } from '../../composables/Loader';
 
   export default {
     name: 'ForgotPassword',
     setup() {
+      const alert = inject('alert');
+      const { error } = alert();
+      const { startLoading, stopLoading } = loader();
+      const resetForm = ref(null);
       const form = reactive({
         email: ''
       });
@@ -48,19 +54,24 @@
         ]
       });
 
-      const loginForm = ref(null);
 
       const onSubmit = () => {
-        loginForm.value.validate(async (valid) => {
+        resetForm.value.validate(async (valid) => {
           if (valid) {
+            startLoading('Sending email...');
             try {
-              const response = await axios.post('http://lara-rest.test/api/login', form);
-              console.log('Login successful:', response.data);
-              // Handle successful login, e.g., store token, redirect
-            } catch (error) {
-              console.error('Login failed:', error.response.data);
-              // Handle login error, e.g., show error message
+              const response = await http.post('password/email', form);
+              if( response.data.success ) {
+                success(response.data.message);
+              } else {
+                error(response.data.message);
+              }
+              
+            } catch (err) {
+              error(err.response.data.message);
             }
+            
+            stopLoading();
           } else {
             console.log('Validation failed');
           }
@@ -70,7 +81,7 @@
       return {
         form,
         rules,
-        loginForm,
+        resetForm,
         onSubmit
       };
     }

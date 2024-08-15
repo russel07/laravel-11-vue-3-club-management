@@ -6,16 +6,20 @@
   <div v-else>
     <Header />
     <div class="dashboard-container">
-      <div class="list-card">
-        <template v-if="userType === 'Coach'">
-          <el-card class="team-item" v-for="team in teams" :key="team.id">
-            <template #header>{{ team.name }}</template>
-            <p><strong>Club:</strong> {{ team.club.name }}</p>
-            <p><strong>Coach:</strong> {{ team.coach_name }}</p>
-            <p><strong>Email:</strong> {{ team.coach_email }}</p>
-            <p><strong>Sports:</strong> <el-tag type="success">{{ team.sport.name }}</el-tag></p>
-          </el-card>
-        </template>
+      <div class="list-card" v-if="userType === 'Coach'">
+        <el-card class="team-item" v-for="team in teams" :key="team.id">
+          <template #header>{{ team.name }}</template>
+          <p><strong>Club:</strong> {{ team.club.name }}</p>
+          <p><strong>Coach:</strong> {{ team.coach_name }}</p>
+          <p><strong>Email:</strong> {{ team.coach_email }}</p>
+          <p><strong>Sports:</strong> <el-tag type="success">{{ team.sport.name }}</el-tag></p>
+        </el-card>
+      </div>
+      <div class="list-card" v-else-if="userType === 'Club Admin'">
+        <p>Welcome</p>
+      </div>
+      <div class="list-card" v-else>
+        <p>Welcome</p>
       </div>
     </div>
   </div>
