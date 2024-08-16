@@ -45,7 +45,7 @@
     margin: 2% 4%;
 }
 .list-container {
-    margin: 0 4%;
+    margin: 0 4% 1% 4%;
 }
 
 .list-card {
@@ -65,11 +65,8 @@
     width: 250px;
 }
 
-.el-card{
-    border-radius: 5%!important;
-}
 .el-card__header{
-    background-color: #0a88f7;
+    background-color: #4e5459;
     color: #fff;
 }
 
@@ -94,7 +91,7 @@
         display: none;
     }
     .list-container {
-        margin: 2%;
+        margin: 0 2% 1% 2%;
     }
 
     .list-card {
@@ -115,14 +112,23 @@
     }
 
     .el-footer{
+        background-color: #f8f9fa; 
+        padding: 20px; 
+        text-align: center;
+        border-top: 1px solid #dee2e6;
         margin-bottom: 40px !important;
+    }
+    .el-footer p{
+        margin: 0; 
+        font-size: 14px; 
+        color: #6c757d;
     }
 }
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 577px) and (max-width: 768px) { 
     .list-container {
-        margin: 2%;
+        margin: 0 2% 1% 2%;
     }
 
     .list-card {
@@ -144,16 +150,29 @@
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 769px) and (max-width: 992px) { 
-    
+    .list-container {
+        margin: 0 2% 1% 2%;
+    }
+
+    .list-card {
+        flex-direction: row;
+    }
+
+    .list-item {
+        width: 45%;
+    }
+
+    .list-item.sports {
+        width: 90%;
+    }
+
+    .el-dialog.form-modal{
+        width: 98%!important;
+    }
 }
 
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 993px) and  (max-width: 1200px) {
-
-}
-
-/* Extra extra large devices (ultra-wide, 1200px and up) */
-@media (min-width: 1201px) {
 
 }

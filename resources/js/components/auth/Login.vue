@@ -84,10 +84,9 @@
       const onSubmit = () => {
         loginForm.value.validate(async (valid) => {
           if (valid) {
+            startLoading('Authenticating...');
             try {
-              startLoading('Authenticating...');
               const response = await http.post('login', form);
-              stopLoading();
               if( response.data.success ) {
                 localStorage.setItem('_GymAppUserToken', response.data.data.token);
                 let user = response.data.data.user;
@@ -101,6 +100,8 @@
             } catch (err) {
               error(err.response.data.message);
             }
+            
+            stopLoading();
           }
         });
       };

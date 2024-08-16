@@ -50,4 +50,23 @@ class Team extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->team_id = self::generateUniqueTeamId();
+        });
+    }
+
+    private static function generateUniqueTeamId()
+    {
+        do {
+            // Generate a 6-digit random number, padded with leading zeros if necessary
+            $teamId = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        } while (self::where('team_id', $teamId)->exists());
+
+        return $teamId;
+    }
 }

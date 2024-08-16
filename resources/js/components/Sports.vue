@@ -160,7 +160,6 @@ export default {
       try {
         startLoading('Deleting sports...');
         const response = await http.delete(`sports/${id}`);
-        stopLoading();
         if(response.data.success) {
           success(response.data.message);
           fetchSports();
@@ -171,6 +170,7 @@ export default {
       } catch (error) {
         error('Failed to delete sport:', error.response.data);
       }
+      stopLoading();
     };
 
     onMounted(() => {

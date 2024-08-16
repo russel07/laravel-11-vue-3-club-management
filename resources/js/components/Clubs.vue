@@ -142,24 +142,24 @@ setup() {
     startLoading('Fetching clubs...');
     try {
       const response = await http.get('clubs');
-      stopLoading();
       clubs.value = response.data.data;
       filteredClubs.value = response.data.data;
     } catch (err) {
       error(err.response.data.message);
     }
+    stopLoading();
   };
 
   const fetchSports = async () => {
     try {
       startLoading('Fetching sports...');
-      stopLoading();
       const response = await http.get('sports');
       sports.value = response.data.data;
     
     } catch (err) {
       error(err.response.data.message);
     }
+    stopLoading();
   };
 
   const getManagerInfo = async () => {
@@ -170,7 +170,6 @@ setup() {
       startLoading('Fetching coaches...');
       try {
         const response = await http.get(`user-by-email/${email}`);
-        stopLoading();
         if( response.data.success && response.data.data ) {
           form.manager_id = response.data.data.id;
           form.manager_name = response.data.data.name;
@@ -227,6 +226,7 @@ setup() {
               error(response.data.message);
             }
           }
+          stopLoading();
           resetForm();
         } catch (err) {
           error(err.response.data.message);
@@ -269,7 +269,6 @@ setup() {
     try {
       startLoading('Deleting club...');
       const response = await http.delete(`clubs/${id}`);
-      stopLoading();
       if(response.data.success) {
         success(response.data.message);
         fetchClubs();
@@ -279,6 +278,7 @@ setup() {
     } catch (err) {
       error(err.response.data.message);
     }
+    stopLoading();
   };
 
   const getTitle = () => {

@@ -93,7 +93,6 @@ class TeamController extends BaseController
      */
     public function show(Request $request, $id)
     {
-        $user_id = $request->user()->id;
         $team = Team::findOrFail($id);
 
         if(!$team) {
@@ -114,7 +113,6 @@ class TeamController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        $user_id = $request->user()->id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'club_id' => 'required|exists:clubs,id',

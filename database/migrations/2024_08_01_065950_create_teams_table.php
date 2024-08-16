@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
+            $table->string('team_id', 6)->unique();
             $table->string('name');
             $table->string('coach_name');
             $table->string('coach_email');

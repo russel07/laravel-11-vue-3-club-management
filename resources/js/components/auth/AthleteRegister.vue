@@ -110,10 +110,9 @@ import { loader } from '../../composables/Loader';
       const onSubmit = () => {
         registerForm.value.validate(async (valid) => {
           if (valid) {
+            startLoading('Creating account...');
             try {
-              startLoading('Creating account...');
               const response = await http.post('user/register', form);
-              stopLoading();
 
               if( response.data.success ) {
                 localStorage.setItem('_GymAppUserToken', response.data.data.token);
@@ -128,6 +127,8 @@ import { loader } from '../../composables/Loader';
             } catch (err) {
               error(err.response.data.message);
             }
+            
+            stopLoading();
           }
         });
       };

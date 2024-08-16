@@ -124,12 +124,13 @@ export default {
             startLoading('Fetching ' +userType +' ...');
             try {
                 const response = await http.get(`users-by-type/${userType}`);
-                stopLoading();
                 users.value = response.data.data;
                 filteredUsers.value = response.data.data;
             } catch (err) {
                 //error(err.response.data.message);
             }
+            
+            stopLoading();
         };
 
         const onAddNew = () => {
@@ -209,6 +210,7 @@ export default {
                 } catch (err) {
                     error(err.response.data.message);
                 }
+                stopLoading();
                 resetForm();
             }
             });
@@ -218,7 +220,6 @@ export default {
             try {
                 startLoading('Deleting...');
                 const response = await http.delete(`user/${id}`);
-                stopLoading();
                 if(response.data.success) {
                     success(response.data.message);
                     fetchUsers();
@@ -226,8 +227,10 @@ export default {
                     error(response.data.message);
                 }
             } catch (err) {
-            error(err.response.data.message);
+                error(err.response.data.message);
             }
+            
+            stopLoading();
         };
 
         onMounted(() => {

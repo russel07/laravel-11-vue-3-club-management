@@ -7,10 +7,11 @@
           <div class="list-card">
             <el-card class="list-item teams" v-for="team in filteredTeams" :key="team.id">
               <template #header>{{ team.name }}</template>
+              <p><strong>Team ID:</strong> {{ team.team_id }}</p>
               <p><strong>Club:</strong> {{ team.club.name }}</p>
-              <p><strong>Coach:</strong> {{ team.coach_name }}</p>
+              <p><strong>Team:</strong> {{ team.coach_name }}</p>
               <p><strong>Email:</strong> {{ team.coach_email }}</p>
-              <p><strong>Sports:</strong> {{ team.sport.name }}</p>
+              <p><strong>Sports:</strong><el-tag type="info"> {{ team.sport.name }}</el-tag></p>
               <template #footer>
                 <el-button size="small" @click="editTeam(team)">Edit</el-button>
                 <el-popconfirm
