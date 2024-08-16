@@ -25,7 +25,9 @@
           </el-card>
         </div>
       </el-main>
-      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+      <el-footer>
+        <Footer/>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -34,6 +36,7 @@
 
 import { inject, reactive, ref } from 'vue';
 import Header from "../Header";
+import Footer from "../Footer";
 import http from "../../http/http-common";
 import {loader} from '../../composables/Loader';
 
@@ -41,6 +44,7 @@ import {loader} from '../../composables/Loader';
     name: 'ChangePassword',
     components: {
       Header,
+      Footer
     },
     setup() {
       const alert = inject('alert');

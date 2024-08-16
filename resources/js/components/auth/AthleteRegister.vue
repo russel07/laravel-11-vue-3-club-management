@@ -39,19 +39,25 @@
           </div>
         </el-card>
       </el-main>
-      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+      <el-footer>
+          <Footer/>
+      </el-footer>
     </el-container>
   </div>
 </template>
 
 <script>
 import { inject, reactive, ref, onMounted } from 'vue';
+import Footer from "../Footer";
 import { useRouter } from 'vue-router';
 import http from "../../http/http-common";
 import { loader } from '../../composables/Loader';
 
   export default {
     name: "AthleteRegister",
+    components: {
+      Footer
+    },
     setup() {
       const form = reactive({
         team_id: '',

@@ -1,33 +1,43 @@
 <template>
-  <div v-if="'Athlete' === userType">
-    <Test/>
-  </div>
+ <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <div v-if="'Athlete' === userType">
+          <Test/>
+        </div>
 
-  <div v-else>
-    <Header />
-    <div class="dashboard-container">
-      <div class="list-card" v-if="userType === 'Coach'">
-        <el-card class="team-item" v-for="team in teams" :key="team.id">
-          <template #header>{{ team.name }}</template>
-          <p><strong>Club:</strong> {{ team.club.name }}</p>
-          <p><strong>Coach:</strong> {{ team.coach_name }}</p>
-          <p><strong>Email:</strong> {{ team.coach_email }}</p>
-          <p><strong>Sports:</strong> <el-tag type="success">{{ team.sport.name }}</el-tag></p>
-        </el-card>
-      </div>
-      <div class="list-card" v-else-if="userType === 'Club Admin'">
-        <p>Welcome</p>
-      </div>
-      <div class="list-card" v-else>
-        <p>Welcome</p>
-      </div>
-    </div>
-  </div>
+        <div v-else>
+          <Header />
+          <div class="dashboard-container">
+            <div class="list-card" v-if="userType === 'Coach'">
+              <el-card class="team-item" v-for="team in teams" :key="team.id">
+                <template #header>{{ team.name }}</template>
+                <p><strong>Club:</strong> {{ team.club.name }}</p>
+                <p><strong>Coach:</strong> {{ team.coach_name }}</p>
+                <p><strong>Email:</strong> {{ team.coach_email }}</p>
+                <p><strong>Sports:</strong> <el-tag type="success">{{ team.sport.name }}</el-tag></p>
+              </el-card>
+            </div>
+            <div class="list-card" v-else-if="userType === 'Club Admin'">
+              <p>Welcome</p>
+            </div>
+            <div class="list-card" v-else>
+              <p>Welcome</p>
+            </div>
+          </div>
+        </div>
+      </el-main>
+      <el-footer>
+        <Footer/>
+      </el-footer>
+    </el-container>
+</div>        
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
 import Header from "./Header";
+import Footer from "./Footer";
 import Test from "./test/Test";
 import http from "../http/http-common";
 import {loader} from '../composables/Loader';
@@ -36,6 +46,7 @@ export default {
   name: 'Admin',
   components: {
     Header,
+    Footer,
     Test
   },
   setup() {

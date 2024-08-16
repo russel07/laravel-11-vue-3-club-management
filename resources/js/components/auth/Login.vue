@@ -28,7 +28,9 @@
         </el-card>
         
       </el-main>
-      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+      <el-footer>
+        <Footer/>
+      </el-footer>
     </el-container>
   </div>
   
@@ -39,9 +41,13 @@
   import { useRouter } from 'vue-router';
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
+  import Footer from "../Footer";
 
   export default {
     name: 'Login',
+    components: {
+      Footer
+    },
     setup() {
       const form = reactive({
         email: '',

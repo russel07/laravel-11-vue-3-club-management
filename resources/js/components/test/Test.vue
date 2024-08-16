@@ -1,75 +1,86 @@
 <template>
-    <Header :pageTitle="'Manage Test'" :addButton="'Insert Test'" @add-new="onAddNew" @search="onSearch" />
-    <div class="tests-container">
-      <div class="list-card">
-        <el-card class="test-item" v-for="(test, index) in filteredTests" :key="test.id">
-            <template #header>Test {{ index+1 }}</template>
-            <p><strong>Test Date:</strong> {{ formatDate(test.test_date) }} </p>
-            <p><strong>Last Update:</strong> {{ formatDate(test.updated_at) }} </p>
-            <p><strong>Test Status:</strong>
-                <el-tag v-if="getStatus(test)" type="success">Complete</el-tag>
-                <el-tag v-else type="warning">Incomplete</el-tag>
-            </p>
-            <template #footer>
-                <el-button type="primary" size="small" @click="editTestResult(test)" round>Edit</el-button>
-                <el-button type="success" size="small" @click="viewResult(test)" round>Result</el-button>
-                <el-button type="info" :disabled="!getStatus(test)" size="small" @click="viewGraph(test)" round>Chart</el-button>
-                <el-popconfirm
-                    confirm-button-text="Yes"
-                    cancel-button-text="No"
-                    icon-color="#626AEF"
-                    title="Are you sure to delete this?"
-                    @confirm="deleteAthlete(athlete.id)"
-                >
-                    <template #reference>
-                    <el-button type="danger" size="small" round>Delete</el-button>
+<div class="common-layout">
+    <el-container class="full-height">
+        <el-main class="main-center">
+            <Header :pageTitle="'Manage Test'" :addButton="'Insert Test'" @add-new="onAddNew" @search="onSearch" />
+            <div class="list-container">
+            <div class="list-card">
+                <el-card class="list-item tests" v-for="(test, index) in filteredTests" :key="test.id">
+                    <template #header>Test {{ index+1 }}</template>
+                    <p><strong>Test Date:</strong> {{ formatDate(test.test_date) }} </p>
+                    <p><strong>Last Update:</strong> {{ formatDate(test.updated_at) }} </p>
+                    <p><strong>Test Status:</strong>
+                        <el-tag v-if="getStatus(test)" type="success">Complete</el-tag>
+                        <el-tag v-else type="warning">Incomplete</el-tag>
+                    </p>
+                    <template #footer>
+                        <el-button type="primary" size="small" @click="editTestResult(test)" round>Edit</el-button>
+                        <el-button type="success" size="small" @click="viewResult(test)" round>Result</el-button>
+                        <el-button type="info" :disabled="!getStatus(test)" size="small" @click="viewGraph(test)" round>Chart</el-button>
+                        <el-popconfirm
+                            confirm-button-text="Yes"
+                            cancel-button-text="No"
+                            icon-color="#626AEF"
+                            title="Are you sure to delete this?"
+                            @confirm="deleteAthlete(athlete.id)"
+                        >
+                            <template #reference>
+                            <el-button type="danger" size="small" round>Delete</el-button>
+                            </template>
+                        </el-popconfirm>
                     </template>
-                </el-popconfirm>
-            </template>
-        </el-card>
-      </div>
-    </div>
-    <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle">
-        <el-form :model="form" label-width="180px" style="max-width: 450px;">
-            <el-form-item label="Test Date" prop="test_date" label-position="top">
-                <el-date-picker v-model="form.test_date" type="date" placeholder="Select date"></el-date-picker>
-            </el-form-item>
+                </el-card>
+            </div>
+            </div>
+            <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle">
+                <el-form :model="form" label-width="180px" style="max-width: 450px;">
+                    <el-form-item label="Test Date" prop="test_date" label-position="top">
+                        <el-date-picker v-model="form.test_date" type="date" placeholder="Select date"></el-date-picker>
+                    </el-form-item>
 
-            <!-- Dropdown to select the test -->
-            <el-form-item label="Select Test" label-position="top">
-                <el-select v-model="selectedTest" placeholder="Select a test">
-                    <el-option
-                        v-for="(label, key) in test_label"
-                        :key="key"
-                        :label="label"
-                        :value="key"
-                    ></el-option>
-                </el-select>
-            </el-form-item>
-            
-            <!-- Render the input field for the selected test -->
-            <el-form-item v-if="selectedTest" :label="test_label[selectedTest]" label-position="top">
-                <el-input type="number" min="0" v-model="form.test_results[selectedTest]" placeholder="Enter the result"></el-input>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-        <div class="dialog-footer">
-            <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Insert' }}</el-button>
-                <el-button @click="resetForm">Cancel</el-button>
-        </div>
-        </template>
-    </el-dialog>
+                    <!-- Dropdown to select the test -->
+                    <el-form-item label="Select Test" label-position="top">
+                        <el-select v-model="selectedTest" placeholder="Select a test">
+                            <el-option
+                                v-for="(label, key) in test_label"
+                                :key="key"
+                                :label="label"
+                                :value="key"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    
+                    <!-- Render the input field for the selected test -->
+                    <el-form-item v-if="selectedTest" :label="test_label[selectedTest]" label-position="top">
+                        <el-input type="number" min="0" v-model="form.test_results[selectedTest]" placeholder="Enter the result"></el-input>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                <div class="dialog-footer">
+                    <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Insert' }}</el-button>
+                        <el-button @click="resetForm">Cancel</el-button>
+                </div>
+                </template>
+            </el-dialog>
 
-    <el-dialog v-model="resultDialog" class="form-modal" title="Test Results">
-        <p v-for="(label, key) in test_label"><strong>{{ label }}:</strong>
-            <el-tag v-if="test_results[key]" type="primary">{{ test_results[key] }}</el-tag> </p>
-    </el-dialog>
+            <el-dialog v-model="resultDialog" class="form-modal" title="Test Results">
+                <p v-for="(label, key) in test_label"><strong>{{ label }}:</strong>
+                    <el-tag v-if="test_results[key]" type="primary">{{ test_results[key] }}</el-tag> </p>
+            </el-dialog>
+        </el-main>
+    
+        <el-footer>
+            <Footer/>
+        </el-footer>
+    </el-container>
+</div>
 </template>
 
 <script>
   import { inject, ref, reactive, onMounted } from 'vue';
   import { useRoute } from 'vue-router'; 
   import Header from "../Header";
+  import Footer from "../Footer";
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
 
@@ -77,6 +88,7 @@
     name: 'Test',
     components: {
       Header,
+      Footer
     },
   
     setup() {

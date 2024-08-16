@@ -24,20 +24,25 @@
         </el-card>
         
       </el-main>
-      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+      <el-footer>
+          <Footer/>
+      </el-footer>
     </el-container>
   </div>
   
 </template>
 
 <script>
-import { inject, reactive, ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { inject, reactive, ref } from 'vue';
+import Footer from "../Footer";
 import http from "../../http/http-common";
 import { loader } from '../../composables/Loader';
 
   export default {
     name: 'ForgotPassword',
+    components: {
+      Footer,
+    },
     setup() {
       const alert = inject('alert');
       const { error } = alert();

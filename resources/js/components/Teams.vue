@@ -1,73 +1,83 @@
 <template>
-  <Header :pageTitle="'Manage Team'" :addButton="'Register Team'" @add-new="onAddNew" @search="onSearch" />
-  <div class="teams-container">
-    <div class="list-card">
-      <el-card class="team-item" v-for="team in filteredTeams" :key="team.id">
-        <template #header>{{ team.name }}</template>
-        <p><strong>Club:</strong> {{ team.club.name }}</p>
-        <p><strong>Coach:</strong> {{ team.coach_name }}</p>
-        <p><strong>Email:</strong> {{ team.coach_email }}</p>
-        <p><strong>Sports:</strong> {{ team.sport.name }}</p>
-        <template #footer>
-          <el-button size="small" @click="editTeam(team)">Edit</el-button>
-          <el-popconfirm
-            confirm-button-text="Yes"
-            cancel-button-text="No"
-            icon-color="#626AEF"
-            title="Are you sure to delete this?"
-            @confirm="deleteTeam(team.id)"
-          >
-            <template #reference>
-              <el-button type="danger" size="small">Delete</el-button>
-            </template>
-          </el-popconfirm>
-        </template>
-      </el-card>
-    </div>
-  </div>
+  <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <Header :pageTitle="'Manage Team'" :addButton="'Register Team'" @add-new="onAddNew" :show_search="true" @search="onSearch" />
+        <div class="list-container">
+          <div class="list-card">
+            <el-card class="list-item teams" v-for="team in filteredTeams" :key="team.id">
+              <template #header>{{ team.name }}</template>
+              <p><strong>Club:</strong> {{ team.club.name }}</p>
+              <p><strong>Coach:</strong> {{ team.coach_name }}</p>
+              <p><strong>Email:</strong> {{ team.coach_email }}</p>
+              <p><strong>Sports:</strong> {{ team.sport.name }}</p>
+              <template #footer>
+                <el-button size="small" @click="editTeam(team)">Edit</el-button>
+                <el-popconfirm
+                  confirm-button-text="Yes"
+                  cancel-button-text="No"
+                  icon-color="#626AEF"
+                  title="Are you sure to delete this?"
+                  @confirm="deleteTeam(team.id)"
+                >
+                  <template #reference>
+                    <el-button type="danger" size="small">Delete</el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-card>
+          </div>
+        </div>
 
-  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
-    <el-form :model="form" :rules="rules" ref="teamForm" label-width="auto" label-position="top">
-      <el-form-item label="Sport" prop="sport_id">
-        <el-select v-model="form.sport_id" placeholder="Select Sport" @change="filterClubs">
-          <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
-        </el-select>
-      </el-form-item>
+        <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+          <el-form :model="form" :rules="rules" ref="teamForm" label-width="auto" label-position="top">
+            <el-form-item label="Sport" prop="sport_id">
+              <el-select v-model="form.sport_id" placeholder="Select Sport" @change="filterClubs">
+                <el-option v-for="sport in sports" :key="sport.id" :label="sport.name" :value="sport.id" />
+              </el-select>
+            </el-form-item>
 
-      <el-form-item label="Club" prop="club_id">
-        <el-select v-model="form.club_id" placeholder="Select Club">
-          <el-option v-for="club in clubs" :key="club.id" :label="club.name" :value="club.id" />
-        </el-select>
-      </el-form-item>
-      
-      <el-form-item label="Team Name" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
+            <el-form-item label="Club" prop="club_id">
+              <el-select v-model="form.club_id" placeholder="Select Club">
+                <el-option v-for="club in clubs" :key="club.id" :label="club.name" :value="club.id" />
+              </el-select>
+            </el-form-item>
+            
+            <el-form-item label="Team Name" prop="name">
+              <el-input v-model="form.name" />
+            </el-form-item>
 
-      <el-form-item v-if="!isEditing" label="Coach Email" prop="coach_email">
-        <el-input v-model="form.coach_email" @blur="getCoachInfo"/>
-      </el-form-item>
+            <el-form-item v-if="!isEditing" label="Coach Email" prop="coach_email">
+              <el-input v-model="form.coach_email" @blur="getCoachInfo"/>
+            </el-form-item>
 
-      <el-form-item v-if="!isEditing" label="Coach Name" prop="coach_name">
-        <el-input v-model="form.coach_name"/>
-      </el-form-item>
+            <el-form-item v-if="!isEditing" label="Coach Name" prop="coach_name">
+              <el-input v-model="form.coach_name"/>
+            </el-form-item>
 
-      <el-form-item v-if="!form.coach_id && !isEditing" label="Password" prop="password">
-        <el-input v-model="form.password"/>
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-            <el-button @click="resetForm">Cancel</el-button>
-      </div>
-    </template>
-  </el-dialog>
+            <el-form-item v-if="!form.coach_id && !isEditing" label="Password" prop="password">
+              <el-input v-model="form.password"/>
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+                  <el-button @click="resetForm">Cancel</el-button>
+            </div>
+          </template>
+        </el-dialog>
+      </el-main>
+      <el-footer>
+        <Footer/>
+      </el-footer>
+    </el-container>
+</div>       
 </template>
 
 <script>
 import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
+import Footer from "./Footer";
 import http from "../http/http-common";
 import {loader} from '../composables/Loader';
 
@@ -75,6 +85,7 @@ export default {
   name: 'Teams',
   components: {
     Header,
+    Footer,
   },
   setup() {
     const form = reactive({

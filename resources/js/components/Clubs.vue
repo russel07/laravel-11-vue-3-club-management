@@ -73,7 +73,9 @@
           </template>
         </el-dialog>
       </el-main>
-      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+      <el-footer>
+        <Footer/>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -81,6 +83,7 @@
 <script>
 import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
+import Footer from "./Footer";
 import http from "../http/http-common";
 import { loader } from '../composables/Loader';
 
@@ -88,6 +91,7 @@ export default {
 name: 'Clubs',
 components: {
   Header,
+  Footer
 },
 setup() {
   const form = reactive({
