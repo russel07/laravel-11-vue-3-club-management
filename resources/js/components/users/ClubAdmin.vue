@@ -1,6 +1,11 @@
 <template>
-  <div class="wrapper">
-    <ManageUser :userType="'Club Admin'" :addButton="'Add Club Admin'"/>
+  <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <ManageUser :userType="'Club Admin'" :addButton="'Add Club Admin'"/>
+      </el-main>
+      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+    </el-container>
   </div>
 </template>
 

@@ -45,7 +45,7 @@
   </el-header>
   <div class="header-row" v-if="pageTitle">
     <div class="title">
-      <h1>{{ pageTitle }}</h1>
+      <h1 class="page-title">{{ pageTitle }}</h1>
     </div>
     <div class="actions">
       <el-button v-if="addButton" type="primary" @click="addNew">{{ addButton }}</el-button>
@@ -115,31 +115,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.logo {
-  height: 50px;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 4%;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.title h1 {
-  margin: 0;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  margin-left: 10px;
-  max-width: 300px;
-}
-</style>

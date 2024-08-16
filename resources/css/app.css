@@ -1,10 +1,98 @@
-#body {
-    width: 100%;
-}
 
+.el-container{
+    min-height: 100vh;
+}
+.el-main,
 .el-header{
     padding: 0 !important;
 }
 .el-menu--horizontal{
     background-color: #f2f3f7!important;
+}
+
+.logo {
+    height: 50px;
+}
+  
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 4%;
+    border-bottom: 1px solid #ebeef5;
+}
+
+.title h1 {
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    margin-left: 10px;
+    max-width: 300px;
+}
+
+.list-container {
+    margin: 0 4%;
+}
+
+.list-card {
+    display: flex;
+    gap: 2%; 
+    flex-wrap: wrap;
+    justify-content: flex-start; 
+}
+
+.list-item {
+    width: 30%;
+    text-align: left;
+    margin-top: 3%;
+}
+
+.list-item.sports {
+    width: 250px;
+}
+
+.el-dialog.form-modal{
+    width: 500px;
+}
+  
+.el-tag {
+    margin: 0 5px;
+}
+
+
+.cp-form-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+@media only screen and (max-width: 600px) {
+    .page-title{
+        display: none;
+    }
+    .list-container {
+        margin: 2%;
+    }
+
+    .list-card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .list-item {
+        width: 97%;
+    }
+
+    .list-item.sports {
+        width: 90%;
+    }
+
+    .el-dialog.form-modal{
+        width: 98%!important;
+    }
 }

@@ -1,8 +1,8 @@
 <template>
-    <Header :pageTitle="pageTitle" @add-new="onAddNew" @search="onSearch"/>
-    <div class="users-container">
+    <Header :pageTitle="pageTitle" :addButton="addButton" @add-new="onAddNew" :show_search="true" @search="onSearch"/>
+    <div class="list-container">
         <div class="list-card">
-            <el-card class="user-item" v-for="user in filteredUsers" :key="user.id">
+            <el-card class="list-item users" v-for="user in filteredUsers" :key="user.id">
                 <template #header>{{ user.name }}</template>
                 <p><strong>Name:</strong> {{ user.name }}</p>
                 <p><strong>Gender:</strong> {{ user.gender }} </p>
@@ -73,7 +73,7 @@ export default {
     components: {
         Header,
     },
-    props: ['userType'],
+    props: ['userType', 'addButton'],
 
     setup(props) {
         const form = reactive({
@@ -253,25 +253,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-.users-container {
-  margin: 2% 4%;
-}
-
-.list-card {
-  display: flex;
-  gap: 2%; 
-  flex-wrap: wrap;
-  justify-content: flex-start; 
-}
-
-.user-item {
-  width: 23%;
-  text-align: left;
-  margin-top: 3%;
-}
-
-.el-tag{
-  margin: 0 5px;
-}
-</style>

@@ -1,74 +1,81 @@
 <template>
-  <Header :pageTitle="'Manage Club'" :addButton="'Add Club'" @add-new="onAddNew" @search="onSearch" />
-  <div class="clubs-container">
-    <div class="list-card">
-      <el-card class="club-item" v-for="club in filteredClubs" :key="club.id">
-        <template #header>{{ club.name }}</template>
-        <p><strong>Location:</strong> {{ club.location }}</p>
-        <p><strong>Manager:</strong> {{ club.manager_name }} </p>
-        <p><strong>Email:</strong> {{ club.manager_email }}</p>
-        <div>
-          <strong>Sports:</strong>
-          <el-tag v-for="sport in club.sports" :key="sport.id" type="success">{{ sport.name }}</el-tag>
+  <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <Header :pageTitle="'Manage Club'" :addButton="'Add Club'" @add-new="onAddNew" @search="onSearch" />
+        <div class="list-container">
+          <div class="list-card">
+            <el-card class="list-item clubs" v-for="club in filteredClubs" :key="club.id">
+              <template #header>{{ club.name }}</template>
+              <p><strong>Location:</strong> {{ club.location }}</p>
+              <p><strong>Manager:</strong> {{ club.manager_name }} </p>
+              <p><strong>Email:</strong> {{ club.manager_email }}</p>
+              <div>
+                <strong>Sports:</strong>
+                <el-tag v-for="sport in club.sports" :key="sport.id" type="success">{{ sport.name }}</el-tag>
+              </div>
+              <template #footer>
+                <el-button size="small" @click="editClub(club)">Edit</el-button>
+                <el-popconfirm
+                  confirm-button-text="Yes"
+                  cancel-button-text="No"
+                  icon-color="#626AEF"
+                  title="Are you sure to delete this?"
+                  @confirm="deleteClub(club.id)"
+                >
+                  <template #reference>
+                    <el-button type="danger" size="small">Delete</el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-card>
+          </div>
         </div>
-        <template #footer>
-          <el-button size="small" @click="editClub(club)">Edit</el-button>
-          <el-popconfirm
-            confirm-button-text="Yes"
-            cancel-button-text="No"
-            icon-color="#626AEF"
-            title="Are you sure to delete this?"
-            @confirm="deleteClub(club.id)"
-          >
-            <template #reference>
-              <el-button type="danger" size="small">Delete</el-button>
-            </template>
-          </el-popconfirm>
-        </template>
-      </el-card>
-    </div>
-</div>
 
-  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
-    <el-form :model="form" :rules="rules" ref="clubForm" label-width="auto" label-position="top">
+        <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+          <el-form :model="form" :rules="rules" ref="clubForm" label-width="auto" label-position="top">
 
-      <el-form-item label="Club Name" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
+            <el-form-item label="Club Name" prop="name">
+              <el-input v-model="form.name" />
+            </el-form-item>
 
-      <el-form-item label="Location" prop="location">
-        <el-input v-model="form.location" />
-      </el-form-item>
+            <el-form-item label="Location" prop="location">
+              <el-input v-model="form.location" />
+            </el-form-item>
 
-      <el-form-item v-if="!isEditing" label="Manager Email" prop="manager_email">
-        <el-input v-model="form.manager_email" @blur="getManagerInfo"/>
-      </el-form-item>
+            <el-form-item v-if="!isEditing" label="Manager Email" prop="manager_email">
+              <el-input v-model="form.manager_email" @blur="getManagerInfo"/>
+            </el-form-item>
 
-      <el-form-item v-if="!isEditing" label="Manager Name" prop="manager_name">
-        <el-input v-model="form.manager_name" />
-      </el-form-item>
+            <el-form-item v-if="!isEditing" label="Manager Name" prop="manager_name">
+              <el-input v-model="form.manager_name" />
+            </el-form-item>
 
-      <el-form-item v-if="!form.manager_id && !isEditing" label="Password" prop="password">
-        <el-input v-model="form.password"/>
-      </el-form-item>
+            <el-form-item v-if="!form.manager_id && !isEditing" label="Password" prop="password">
+              <el-input v-model="form.password"/>
+            </el-form-item>
 
-      <el-form-item label="Sport" prop="sports">
-        <el-select v-model="form.sports" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" placeholder="Select Sport">
-          <el-option v-for="sport in sports" 
-          :key="sport.id" 
-          :label="sport.name" 
-          :value="sport.id" />
-        </el-select>
-      </el-form-item>
+            <el-form-item label="Sport" prop="sports">
+              <el-select v-model="form.sports" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" placeholder="Select Sport">
+                <el-option v-for="sport in sports" 
+                :key="sport.id" 
+                :label="sport.name" 
+                :value="sport.id" />
+              </el-select>
+            </el-form-item>
 
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-            <el-button @click="resetForm">Cancel</el-button>
-      </div>
-    </template>
-  </el-dialog>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+                  <el-button @click="resetForm">Cancel</el-button>
+            </div>
+          </template>
+        </el-dialog>
+      </el-main>
+      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+    </el-container>
+  </div>
 </template>
 
 <script>

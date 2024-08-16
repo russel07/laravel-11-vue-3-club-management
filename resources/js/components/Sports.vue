@@ -1,41 +1,47 @@
 <template>
-  <Header :pageTitle="'Manage Sports'" :addButton="'Add Sport'" @add-new="onAddNew" @search="onSearch" />
-  <div class="sports-container">
-    <div class="list-card">
-      <el-card class="sports-item" v-for="sport in filteredSports" :key="sport.id">
-        {{ sport.name }}
-        <template #footer>
-          <el-button size="small" @click="handleEdit(sport)">Edit</el-button>
-          <el-popconfirm
-            confirm-button-text="Yes"
-            cancel-button-text="No"
-            icon-color="#626AEF"
-            title="Are you sure to delete this?"
-            @confirm="handleDelete(sport.id)"
-          >
-            <template #reference>
-              <el-button type="danger" size="small">Delete</el-button>
-            </template>
-          </el-popconfirm>
-        </template>
-      </el-card>
-    </div>
+  <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <Header :pageTitle="'Manage Sports'" :addButton="'Add Sport'" @add-new="onAddNew" :show_search="true" @search="onSearch" />
+        <div class="list-container">
+          <div class="list-card">
+            <el-card class="list-item sports" v-for="sport in filteredSports" :key="sport.id">
+              {{ sport.name }}
+              <template #footer>
+                <el-button size="small" @click="handleEdit(sport)">Edit</el-button>
+                <el-popconfirm
+                  confirm-button-text="Yes"
+                  cancel-button-text="No"
+                  icon-color="#626AEF"
+                  title="Are you sure to delete this?"
+                  @confirm="handleDelete(sport.id)"
+                >
+                  <template #reference>
+                    <el-button type="danger" size="small">Delete</el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-card>
+          </div>
+        </div>
+        <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
+          <el-form :model="form" :rules="rules" ref="sportForm" label-width="auto" label-position="top">
+            <el-form-item label="Sport Name" prop="name">
+              <el-input v-model="form.name" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
+                  <el-button @click="resetForm">Cancel</el-button>
+            </div>
+          </template>
+        </el-dialog>
+      </el-main>
+      <el-footer style="text-align: center;">Copyrigt &copy; by Md. Russel hussain</el-footer>
+    </el-container>
   </div>
-  <el-dialog v-model="dialogFormVisible" class="form-modal" :title="dialogTitle" max-width="500">
-    <el-form :model="form" :rules="rules" ref="sportForm" label-width="auto" label-position="top">
-      <el-form-item label="Sport Name" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button type="primary" @click="onSubmit">{{ isEditing ? 'Update' : 'Add' }}</el-button>
-            <el-button @click="resetForm">Cancel</el-button>
-      </div>
-    </template>
-  </el-dialog>
 </template>
-
 <script>
 import { inject, reactive, ref, onMounted } from 'vue';
 import Header from "./Header";
@@ -193,20 +199,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.sports-container {
-  margin: 2% 4%;
-}
-
-.list-card{
-  display: flex;
-  gap: 2%; 
-  flex-wrap: wrap;
-  justify-content: flex-start; 
-}
-.sports-item{
-  width: 250px;
-  margin-top: 3%;
-}
-</style>
