@@ -113,6 +113,10 @@
     .el-dialog.form-modal{
         width: 98%!important;
     }
+
+    .el-footer{
+        margin-bottom: 40px !important;
+    }
 }
 
 /* Small devices (landscape phones, 576px and up) */
