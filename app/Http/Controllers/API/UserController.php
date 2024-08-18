@@ -130,7 +130,7 @@ class UserController extends BaseController
     {
         $user = $request->user();
         if( 'Coach' === $user->user_type ) {
-            $teamIds = Team::where('coach_id', $user->id)->pluck('id')->toArray();
+            $teamIds = Team::where('coach_id', $user->id)->pluck('team_id')->toArray();
             $users = User::with('team')->whereIn('team_id', $teamIds)->where('user_type', 'Athlete')->get();
             return $this->sendResponse($users, '');
         } else {
