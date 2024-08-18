@@ -1,18 +1,28 @@
 <template>
-  <Header :pageTitle="'Test Chart'"/>
-  <div class="chart-wrapper">
-    <div class="test-info">
-      <p><strong>Test Date:</strong> {{ formatDate(testInfo.test_date) }} </p>
-    </div>
-    <canvas ref="radarChart"></canvas>
+  <div class="common-layout">
+    <el-container class="full-height">
+      <el-main class="main-center">
+        <Header :pageTitle="'Harjoitettavuustesti Chart'"/>
+        <div class="chart-wrapper">
+          <div class="test-info">
+            <p><strong>Test Date:</strong> {{ formatDate(testInfo.test_date) }} </p>
+          </div>
+          <canvas ref="radarChart"></canvas>
+        </div>
+      </el-main>
+      <el-footer>
+          <Footer/>
+      </el-footer>
+    </el-container>
   </div>
 </template>
 
 <script>
-  import { inject, ref, reactive, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
   import { useRoute } from 'vue-router'; 
   import Header from "../Header";
+  import Footer from "../Footer";
   import http from "../../http/http-common";
   import { loader } from '../../composables/Loader';
 
@@ -31,7 +41,7 @@ const rotatedBackgroundPlugin = {
 
           const valueToRadius = value => {
             const radius = scale.getDistanceFromCenterForValue(value);
-            return Math.max(radius, 0); // Ensure the radius is non-negative
+            return Math.max(radius, 0);
           };
 
           const drawArc = (innerRadius, outerRadius, color) => {
@@ -55,7 +65,7 @@ const rotatedBackgroundPlugin = {
           ctx.translate(-centerX, -centerY);
 
           // Draw the colored background regions
-          drawArc(0, valueToRadius(6), 'rgba(255, 0, 0, 0.2)');   // Red for 0-6
+          drawArc(valueToRadius(4), valueToRadius(6), 'rgba(255, 0, 0, 0.2)');   // Red for 4-6
           drawArc(valueToRadius(6), valueToRadius(8), 'rgba(255, 255, 0, 0.2)'); // Yellow for 6-8
           drawArc(valueToRadius(8), valueToRadius(10), 'rgba(0, 255, 0, 0.2)');  // Green for 8-10
 
@@ -68,12 +78,11 @@ export default {
   name: 'Chart',
   components: {
     Header,
+    Footer
   },
   setup() {
     const { startLoading, stopLoading } = loader();
-    const alert                         = inject('alert');
     const route                         = useRoute(); 
-    const { success, error }            = alert();
     const testInfo                      = ref([]);
     const testId                        = ref(route.params.testId ? route.params.testId : '');
     const gender                        = ref('');
@@ -153,7 +162,7 @@ export default {
       datasets: []
     };
 
-    const chartOptions = {
+    const chartOptions = { 
       scales: {
         r: {
             beginAtZero: true,
@@ -255,14 +264,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.chart-wrapper{
-  display: flex;
-  justify-content: center;
-}
-canvas {
-  max-width: 800px;
-  max-height: 800px;
-}
-</style>

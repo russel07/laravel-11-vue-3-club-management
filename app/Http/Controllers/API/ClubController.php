@@ -23,7 +23,7 @@ class ClubController extends BaseController
             $clubs = Club::with('sports')->get();
         } else {
             $clubIds = Club::where('manager_id', $user_id)->pluck('id')->toArray();
-            $clubs = Club::whereIn('club_id', $clubIds)->with('sports')->get();
+            $clubs = Club::whereIn('id', $clubIds)->with('sports')->get();
         }
         return $this->sendResponse($clubs, '');
     }

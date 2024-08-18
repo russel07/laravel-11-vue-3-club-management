@@ -48,11 +48,11 @@
               <el-input v-model="form.name" />
             </el-form-item>
 
-            <el-form-item v-if="!isEditing" label="Coach Email" prop="coach_email">
+            <el-form-item label="Coach Email" prop="coach_email">
               <el-input v-model="form.coach_email" @blur="getCoachInfo"/>
             </el-form-item>
 
-            <el-form-item v-if="!isEditing" label="Coach Name" prop="coach_name">
+            <el-form-item label="Coach Name" prop="coach_name">
               <el-input v-model="form.coach_name"/>
             </el-form-item>
 
@@ -99,6 +99,7 @@ export default {
       club_id: '',
       password: ''
     });
+
     const alert = inject('alert');
     const { success, error } = alert();
     const teams = ref([]);
@@ -280,17 +281,20 @@ export default {
       getTitle();
     };
 
-    const editTeam = (team) => {
+    const editTeam = async (team) => {
       form.id           = team.id;
       form.name         = team.name;
       form.coach_name   = team.coach_name;
       form.coach_email  = team.coach_email;
       form.sport_id     = team.sport_id;
-      filterClubs();
       form.club_id      = team.club_id;
       form.coach_id     = team.coach_id;
-      isEditing.value   = true;
-      dialogFormVisible.value = true;
+      await fetchClubs(team.sport_id);
+      if(clubs.value) {
+        isEditing.value   = true;
+        dialogFormVisible.value = true;
+      }
+
       getTitle();
     };
 

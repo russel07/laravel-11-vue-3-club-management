@@ -43,11 +43,11 @@
               <el-input v-model="form.location" />
             </el-form-item>
 
-            <el-form-item v-if="!isEditing" label="Manager Email" prop="manager_email">
+            <el-form-item label="Manager Email" prop="manager_email">
               <el-input v-model="form.manager_email" @blur="getManagerInfo"/>
             </el-form-item>
 
-            <el-form-item v-if="!isEditing" label="Manager Name" prop="manager_name">
+            <el-form-item label="Manager Name" prop="manager_name">
               <el-input v-model="form.manager_name" />
             </el-form-item>
 

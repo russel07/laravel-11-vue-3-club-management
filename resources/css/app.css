@@ -1,3 +1,29 @@
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('./fonts/HelveticaNeueThin.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('./fonts/HelveticaNeueBold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('./fonts/HelveticaNeueBlack.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 300;
+}
 
 .el-container{
     min-height: 100vh;
@@ -68,6 +94,7 @@
 .el-card__header{
     background-color: #4e5459;
     color: #fff;
+    font-weight: bold;
 }
 
 .el-dialog.form-modal{
@@ -83,6 +110,26 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
+}
+
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+canvas {
+    width: 1000px!important;
+    height: 1000px!important;
+}
+
+@media (max-width: 992px) {
+    .chart-wrapper {
+        width: 800px;
+        overflow: auto;
+    }
 }
 
 /* Extra small devices (phones, 320px and up) */

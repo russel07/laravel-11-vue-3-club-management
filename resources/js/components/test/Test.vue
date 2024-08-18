@@ -2,11 +2,11 @@
 <div class="common-layout">
     <el-container class="full-height">
         <el-main class="main-center">
-            <Header :pageTitle="'Manage Test'" :addButton="'Insert Test'" @add-new="onAddNew" @search="onSearch" />
+            <Header :pageTitle="'Manage Harjoitettavuustesti'" :addButton="'Insert Harjoitettavuustesti'" @add-new="onAddNew" @search="onSearch" />
             <div class="list-container">
             <div class="list-card">
                 <el-card class="list-item tests" v-for="(test, index) in filteredTests" :key="test.id">
-                    <template #header>Test {{ index+1 }}</template>
+                    <template #header>Harjoitettavuustesti {{ index+1 }}</template>
                     <p><strong>Test Date:</strong> {{ formatDate(test.test_date) }} </p>
                     <p><strong>Last Update:</strong> {{ formatDate(test.updated_at) }} </p>
                     <p><strong>Test Status:</strong>

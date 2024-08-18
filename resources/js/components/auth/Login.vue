@@ -91,8 +91,8 @@
                 localStorage.setItem('_GymAppUserToken', response.data.data.token);
                 let user = response.data.data.user;
                 localStorage.setItem('_GymAppLoggedInUser',JSON.stringify(user));
-
-                router.push('/');
+                window.location.reload();
+                //router.push('/');
               } else {
                 error(response.data.message);
               }

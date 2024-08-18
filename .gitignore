@@ -19,3 +19,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+composer.lock
+package-lock.json
+public/css/app.css
+public/images/logo.png
+public/mix-manifest.json
+composer.lock
+package-lock.json
