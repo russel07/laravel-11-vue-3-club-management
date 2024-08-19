@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Club;
      
 class ClubController extends BaseController
@@ -46,7 +46,7 @@ class ClubController extends BaseController
             'sports.*' => 'exists:sports,id'
         ];
 
-        if ( ! isset($validatedData['manager_id']) ) {
+        if ( empty($validatedData['manager_id']) ) {
             $rules['password'] = 'required';
         }
 
@@ -121,12 +121,17 @@ class ClubController extends BaseController
      */
     public function update(Request $request, $id)
     {
+        $validatedData = $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'sports' => 'array',
             'sports.*' => 'exists:sports,id'
         ]);
+
+        if ( empty($validatedData['manager_id']) ) {
+            $rules['password'] = 'required';
+        }
      
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
@@ -138,7 +143,17 @@ class ClubController extends BaseController
             return $this->sendError('Invalid Request.', ['No club found']);   
         }
 
-        $validatedData = $request->all();
+        if ( empty($validatedData['manager_id']) ) {
+            $userData = [
+                'name' => $validatedData['manager_name'],
+                'email' => $validatedData['manager_email'],
+                'password' => bcrypt($validatedData['password']),
+                'user_type' => 'Club Admin'
+            ];
+
+            $user = User::create($userData);
+            $validatedData['manager_id'] = $user->id;
+        } 
 
         $club->update($validatedData);
 

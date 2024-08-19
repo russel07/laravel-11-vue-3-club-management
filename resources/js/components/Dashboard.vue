@@ -3,7 +3,7 @@
     <el-container class="full-height">
       <el-main class="main-center">
         <div v-if="'Athlete' === userType">
-          <Test/>
+          <Test :hide_footer="true"/>
         </div>
 
         <div v-else>

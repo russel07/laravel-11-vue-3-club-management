@@ -4,7 +4,7 @@
       <el-main class="main-center">
         <img class="logo" src="../../../images/logo.png"/>
 
-        <el-card style="max-width: 480px; margin-top: 20px;">
+        <el-card style="max-width: 480px; margin: 20px 0;">
           <el-form :model="form" :rules="rules" ref="loginForm" label-width="auto" label-position="top" style="max-width: 600px">
             <el-form-item label="Email" prop="email">
               <el-input v-model="form.email" />
@@ -127,7 +127,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   height: 100%;
 }
 
@@ -154,5 +154,14 @@
 
 .link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    width: 35%;
+  }
+  .el-card {
+    width: 98%;
+  }
 }
 </style>

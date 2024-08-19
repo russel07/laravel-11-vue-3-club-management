@@ -51,7 +51,7 @@
               <el-input v-model="form.manager_name" />
             </el-form-item>
 
-            <el-form-item v-if="!form.manager_id && !isEditing" label="Password" prop="password">
+            <el-form-item v-if="!form.manager_id" label="Password" prop="password">
               <el-input v-model="form.password"/>
             </el-form-item>
 

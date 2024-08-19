@@ -264,3 +264,29 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+canvas {
+    width: 1000px!important;
+    height: 1000px!important;
+    overflow-x: auto;
+}
+
+@media (max-width: 992px) {
+    .chart-wrapper {
+        width: 800px;
+    }
+    canvas {
+      width: 1200px!important;
+      height: 1200px!important;
+  }
+}
+</style>

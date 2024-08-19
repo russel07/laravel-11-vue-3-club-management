@@ -7,7 +7,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use App\Models\Club;
 use App\Models\Team;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
      
 class TeamController extends BaseController
@@ -47,7 +47,6 @@ class TeamController extends BaseController
      */
     public function store(Request $request)
     {
-
         $validatedData = $request->all();
         $rules = [
             'name' => 'required|string|max:255',
@@ -68,7 +67,7 @@ class TeamController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        if ( ! isset($validatedData['coach_id']) ) {
+        if ( empty($validatedData['coach_id']) ) {
             $userData = [
                 'name' => $validatedData['coach_name'],
                 'email' => $validatedData['coach_email'],
@@ -113,25 +112,38 @@ class TeamController extends BaseController
      */
     public function update(Request $request, $id)
     {
+        $validatedData = $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'club_id' => 'required|exists:clubs,id',
             'sport_id' => 'required|exists:sports,id',
         ]);
      
+        if ( empty($validatedData['coach_id']) ) {
+            $rules['password'] = 'required';
+        }
+
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        $validatedData = $request->all();
+        if ( empty($validatedData['coach_id']) ) {
+            $userData = [
+                'name' => $validatedData['coach_name'],
+                'email' => $validatedData['coach_email'],
+                'password' => bcrypt($validatedData['password']),
+                'user_type' => 'Coach'
+            ];
+
+            $user = User::create($userData);
+            $validatedData['coach_id'] = $user->id;
+        } 
 
         $team = Team::findOrFail($id);
 
         if(!$team) {
             return $this->sendError('Invalid Request.', ['No team found']);   
         }
-
-        $validatedData = $request->all();
 
         $team->update($validatedData);
 

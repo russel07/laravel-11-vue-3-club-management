@@ -69,7 +69,7 @@
             </el-dialog>
         </el-main>
     
-        <el-footer>
+        <el-footer v-if="!hide_footer">
             <Footer/>
         </el-footer>
     </el-container>
@@ -86,6 +86,7 @@
 
   export default {
     name: 'Test',
+    props: ['hide_footer'],
     components: {
       Header,
       Footer

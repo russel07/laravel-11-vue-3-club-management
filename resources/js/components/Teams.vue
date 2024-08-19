@@ -56,7 +56,7 @@
               <el-input v-model="form.coach_name"/>
             </el-form-item>
 
-            <el-form-item v-if="!form.coach_id && !isEditing" label="Password" prop="password">
+            <el-form-item v-if="!form.coach_id" label="Password" prop="password">
               <el-input v-model="form.password"/>
             </el-form-item>
           </el-form>
@@ -241,7 +241,6 @@ export default {
               const response = await http.put(`teams/${form.id}`, form);
               stopLoading();
               if(response.data.success) {
-                const index = teams.value.findIndex(team => team.id === response.data.data.id);
                 fetchTeams();
                 success(response.data.message);
               } else {
@@ -286,9 +285,9 @@ export default {
       form.name         = team.name;
       form.coach_name   = team.coach_name;
       form.coach_email  = team.coach_email;
-      form.sport_id     = team.sport_id;
-      form.club_id      = team.club_id;
-      form.coach_id     = team.coach_id;
+      form.sport_id     = parseInt(team.sport_id);
+      form.club_id      = parseInt(team.club_id);
+      form.coach_id     = parseInt(team.coach_id);
       await fetchClubs(team.sport_id);
       if(clubs.value) {
         isEditing.value   = true;
@@ -354,5 +353,5 @@ export default {
       getCoachInfo
     };
   }
-};
+}
 </script>
