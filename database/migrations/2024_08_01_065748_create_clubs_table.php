@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('location');
             $table->string('manager_name');
             $table->string('manager_email');
-            $table->foreignId('manager_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('manager_id');
             $table->timestamps();
         });
     }

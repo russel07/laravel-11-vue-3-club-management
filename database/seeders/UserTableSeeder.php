@@ -34,7 +34,7 @@ class UserTableSeeder extends Seeder
                 'gender'            =>  'Male',
                 'user_type'         =>  'Club Admin',
                 'birth_year'        =>  '1991',
-                'email'             =>  'test@club_admin.co',
+                'email'             =>  'test@clubadmin.co',
                 'password'          =>   bcrypt('Password12@'),
                 'user_type'         =>  'Admin',
                 'created_at'        =>  date('Y-m-d H:i:s'),
