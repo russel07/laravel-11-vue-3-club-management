@@ -22,7 +22,7 @@
                             cancel-button-text="No"
                             icon-color="#626AEF"
                             title="Are you sure to delete this?"
-                            @confirm="deleteAthlete(athlete.id)"
+                            @confirm="deleteTest(test.id)"
                         >
                             <template #reference>
                             <el-button type="danger" size="small" round>Delete</el-button>
@@ -268,6 +268,22 @@
             resetForm();
         };
 
+        const deleteTest = async (id) => {
+            try {
+                startLoading('Deleting test...');
+                const response = await http.delete(`test/${id}`);
+                if(response.data.success) {
+                    success(response.data.message);
+                    fetchTests();
+                } else {
+                    error(response.data.message);
+                }
+            } catch (err) {
+                error(err.response.data.message);
+            }
+            stopLoading();
+        };
+
         const onAddNew = () => {
             getTitle();
             dialogFormVisible.value = true;
@@ -315,7 +331,8 @@
         viewResult,
         test_results,
         viewGraph,
-        formatDate
+        formatDate,
+        deleteTest
       }
     }
   }

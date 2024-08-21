@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container class="full-height">
       <el-main class="main-center">
-        <Header :pageTitle="'Manage Club'" :addButton="'Add Club'" @add-new="onAddNew" @search="onSearch" />
+        <Header :pageTitle="'Manage Club'" :addButton="'Add Club'" @add-new="onAddNew" :show_search="true" @search="onSearch" />
         <div class="list-container">
           <div class="list-card">
             <el-card class="list-item clubs" v-for="club in filteredClubs" :key="club.id">

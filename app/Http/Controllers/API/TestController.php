@@ -4,11 +4,9 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Models\User;
 use App\Models\Test;
-
-use Validator;
-use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class TestController extends BaseController
 {
@@ -43,10 +41,11 @@ class TestController extends BaseController
         // Retrieve and prepare the test results
         $testResults = $request->input('test_results', []);
         $testResultsJson = json_encode($testResults);
-    
+        $testDate = Carbon::parse($request->input('test_date'))->format('Y-m-d H:i:s');
         // Prepare data for insertion
         $data = $request->only(['user_id', 'test_date']);
         $data['test_results'] = $testResultsJson;
+        $data['test_date'] = $testDate;
     
         // Create a new test record
         $test = Test::create($data);
@@ -96,5 +95,26 @@ class TestController extends BaseController
 
         // Return a success response
         return $this->sendResponse($test, 'Test result updated successfully.');
+    }
+
+        /**
+     * Remove the specified test from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy( Request $request, $id )
+    {
+        $test = Test::findOrFail($id);
+
+        if( ! $test ) {
+            return $this->sendError('Invalid Request.', ['No test found']);   
+        }
+
+        if($test->delete()) {
+            return $this->sendResponse([], 'Test deleted successfully.');
+        } else {
+            return $this->sendError('Delete Error.', ['Something went wrong try again later']);   
+        }
     }
 }

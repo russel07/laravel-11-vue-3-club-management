@@ -60,4 +60,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('test/{testId}', [TestController::class, 'show'])->name('get-test');
     Route::post('test-results/', [TestController::class, 'insert_result'])->name('store-test-result');
     Route::put('test-results/{id}', [TestController::class, 'update_result'])->name('update-test-result');
+    Route::delete('/test/{id}', [TestController::class, 'destroy'])->name('delete-test');
 });
